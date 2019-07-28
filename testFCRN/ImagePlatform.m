@@ -174,7 +174,9 @@
     }
 }
 
-- (BOOL)setupPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef withRect:(CGRect)rect {
+- (BOOL)setupPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef
+         pixelFormatType:(OSType)pixelFormatType
+                withRect:(CGRect)rect {
     
      if ((rect.size.width <= 0) || (rect.size.height <= 0)) {
          return NO;
@@ -197,7 +199,7 @@
     CVReturn cvRet =  CVPixelBufferCreate(kCFAllocatorDefault,
                                           rect.size.width,
                                           rect.size.height,
-                                          kCVPixelFormatType_32BGRA,
+                                          pixelFormatType,
                                           (__bridge CFDictionaryRef)pixelBufferAttributes,
                                           pPixelBufferRef);
     

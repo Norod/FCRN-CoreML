@@ -54,7 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (IMAGE_TYPE*)imageFromCVPixelBufferRef:(CVPixelBufferRef)cvPixelBufferRef
                         imageOrientation:(UIImageOrientation)imageOrientation;
 
-- (BOOL)setupPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef withRect:(CGRect)rect;
+- (BOOL)setupPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef
+         pixelFormatType:(OSType)pixelFormatType
+                withRect:(CGRect)rect;
 - (void)teardownPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef;
 
 @end

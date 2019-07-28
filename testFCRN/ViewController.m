@@ -13,6 +13,7 @@
 
 @import CoreML;
 @import Vision;
+@import Accelerate;
 
 //#import "ImagePlatform.h"
 
@@ -69,72 +70,44 @@
                     int sizeY = [multiArrayValue.shape[1] intValue];
                     int sizeX = [multiArrayValue.shape[2] intValue];
                     
-                    double maxVal = *(double_t*) pData;
-                    double minVal = *(double_t*) pData;
-                    
-                    for (int iz =0; iz < sizeZ; ++iz) {
-                        printf("\n\t\t Start Image\t%d\n", iz);
-                        for (int iy =0; iy < sizeY; ++iy) {
-                            //printf("\n");
-                            for (int ix=0; ix < sizeX; ++ix) {
-                                double curVal = 0.;
-                                if (pixelSizeInBytes == 8) {
-                                    curVal = *(double_t*) pData;
-                                } else {
-                                    curVal = (double)(*(Float32*) pData);
-                                }
-                                //printf("%lf ",  curVal);
-                                
-                                if (curVal > maxVal) {
-                                    maxVal = curVal;
-                                }
-                                
-                                if (curVal < minVal) {
-                                    minVal = curVal;
-                                }
-                                
-                                pData += pixelSizeInBytes;
-                            }
-                        }
-                        double scalar = 254./maxVal;
-                        uint8_t toCenter = (uint8_t)((scalar * minVal) / 2.);
-                        uint8_t centeredMax = 254 - toCenter;
-                        printf("\n\t\t minVal = %lf \t maxVal = %lf range = %d..%d\n", minVal, maxVal, (int)toCenter, (int)centeredMax);
-                        printf("\n");
-                        
-                        CVPixelBufferRef grayImageBuffer = NULL;
-                        CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
-                        [self.imagePlatform setupPixelBuffer:&grayImageBuffer withRect:pixelBufferRect];
-                        CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
-                        uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
-                        pData = (uint8_t*)multiArrayValue.dataPointer;
-                        for (int iy =0; iy < sizeY; ++iy) {
-                             ////printf("\n");
-                            for (int ix=0; ix < sizeX; ++ix) {
-                                double curVal = 0.;
-                                if (pixelSizeInBytes == 8) {
-                                    curVal = *(double_t*) pData;
-                                } else {
-                                    curVal = (double)(*(Float32*) pData);
-                                }
-                                
-                                uint8_t grayVal = ((uint8_t)(curVal*scalar)) - toCenter;
-                                 //printf("%d ", (int)grayVal);
-                                *pRGBA =MAKE_RGBA_UINT32(0xFF, grayVal, grayVal, 0x80); //ABGR due to endianity
-                                
-                                pRGBA++;
-                                pData += pixelSizeInBytes;
-                            }
-                        }
-                        CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
-                        
-                        IMAGE_TYPE *depthImage = [self.imagePlatform imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
-                        
-                        NSData* jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
-                        [jpegData writeToFile:@"/Users/dadler/Downloads/outfolder/2_fcrn.jpg" atomically:YES];
-                        
-                        printf("\n\t\t End Image\t%d\n", iz);
+                    char *grayBuff = malloc(sizeY*sizeX*sizeof(char));
+                    if (pixelSizeInBytes == 8) {
+                        double maxVD = 0.;
+                        double minVD = 0.;
+                        vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
+                        vDSP_minvD((const double *)pData, 1, &minVD, sizeY*sizeX);
+                        const  double scalar = 255./maxVD;
+                        double *doubleBuff1 = malloc(sizeY*sizeX*sizeof(double));
+                        vDSP_vsmulD((const double *)pData, 1, &scalar, doubleBuff1, 1, sizeY*sizeX);
+                        const double offset = -((scalar * minVD) / 2.);
+                        double *doubleBuff2 = malloc(sizeY*sizeX*sizeof(double));
+                        vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, sizeY*sizeX);
+                        free(doubleBuff1);
+                        vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  sizeY*sizeX);
+                        free(doubleBuff2);
                     }
+                    
+                    
+                    CVPixelBufferRef grayImageBuffer = NULL;
+                    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
+                    [self.imagePlatform setupPixelBuffer:&grayImageBuffer
+                                         pixelFormatType:kCVPixelFormatType_32BGRA
+                                                withRect:pixelBufferRect];
+                    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
+                    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+                    for (int i = 0; i < sizeY * sizeX; ++i) {
+                        *pRGBA =MAKE_RGBA_UINT32(0xFF, grayBuff[i], grayBuff[i], 0x80); //ABGR due to endianity
+                        pRGBA++;
+                    }
+                    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+                    
+                    IMAGE_TYPE *depthImage32 = [self.imagePlatform imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
+                    
+                    NSData* jpegData = [depthImage32 imageJPEGRepresentationWithCompressionFactor:0.80f];
+                    [jpegData writeToFile:@"/Users/dadler/Downloads/outfolder/2_fcrn32.jpg" atomically:YES];
+                    
+                    [self.imagePlatform teardownPixelBuffer:&grayImageBuffer];
+                    free(grayBuff);
                 }
             }
         }
