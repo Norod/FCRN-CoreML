@@ -12,6 +12,8 @@
 		E8A7366422ED7BE500309FD0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8A7366322ED7BE500309FD0 /* Assets.xcassets */; };
 		E8A7366722ED7BE500309FD0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E8A7366522ED7BE500309FD0 /* Main.storyboard */; };
 		E8A7366A22ED7BE500309FD0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7366922ED7BE500309FD0 /* main.m */; };
+		E8A7367222ED7BFA00309FD0 /* FCRN.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = E8A7367122ED7BFA00309FD0 /* FCRN.mlmodel */; };
+		E8A7368622ED7D6B00309FD0 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +27,10 @@
 		E8A7366822ED7BE500309FD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E8A7366922ED7BE500309FD0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E8A7366B22ED7BE500309FD0 /* testFCRN.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = testFCRN.entitlements; sourceTree = "<group>"; };
+		E8A7367122ED7BFA00309FD0 /* FCRN.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = FCRN.mlmodel; path = ../../FCRN.mlmodel; sourceTree = "<group>"; };
+		E8A7368422ED7D6B00309FD0 /* ImagePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePlatform.h; sourceTree = "<group>"; };
+		E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePlatform.m; sourceTree = "<group>"; };
+		E8A7368722ED7DB600309FD0 /* TargetPlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetPlatform.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +63,7 @@
 		E8A7365C22ED7BE400309FD0 /* testFCRN */ = {
 			isa = PBXGroup;
 			children = (
+				E8A7367122ED7BFA00309FD0 /* FCRN.mlmodel */,
 				E8A7365D22ED7BE400309FD0 /* AppDelegate.h */,
 				E8A7365E22ED7BE400309FD0 /* AppDelegate.m */,
 				E8A7366022ED7BE400309FD0 /* ViewController.h */,
@@ -66,6 +73,9 @@
 				E8A7366822ED7BE500309FD0 /* Info.plist */,
 				E8A7366922ED7BE500309FD0 /* main.m */,
 				E8A7366B22ED7BE500309FD0 /* testFCRN.entitlements */,
+				E8A7368422ED7D6B00309FD0 /* ImagePlatform.h */,
+				E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */,
+				E8A7368722ED7DB600309FD0 /* TargetPlatform.h */,
 			);
 			path = testFCRN;
 			sourceTree = "<group>";
@@ -140,6 +150,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8A7366222ED7BE400309FD0 /* ViewController.m in Sources */,
+				E8A7368622ED7D6B00309FD0 /* ImagePlatform.m in Sources */,
+				E8A7367222ED7BFA00309FD0 /* FCRN.mlmodel in Sources */,
 				E8A7366A22ED7BE500309FD0 /* main.m in Sources */,
 				E8A7365F22ED7BE400309FD0 /* AppDelegate.m in Sources */,
 			);
