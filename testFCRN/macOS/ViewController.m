@@ -38,7 +38,9 @@
     [super viewDidLoad];
     
     self.imagePlatform = [[ImagePlatform alloc] init];
-    [self test];
+     NSError *error = nil;
+     self.fcrn = [[ML_MODEL_CLASS alloc] init];
+     self.model = [VNCoreMLModel modelForMLModel:self.fcrn.model error:&error];
     
     // Do any additional setup after loading the view.
 }
@@ -74,23 +76,23 @@
     [openPanel setAllowsMultipleSelection:NO];
     [openPanel setMessage:@"Choose an image file to display:"];
     [openPanel setAllowedFileTypes:fileTypes];
-    [openPanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Picture"]];
+    [openPanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Pictures/"]];
     [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
         {
             if ([[openPanel URL] isFileURL])
             {
-                [self configureImage:[[openPanel URL] path]];
+                NSString* imagePathStr = [[openPanel URL] path];
+                [self configureImage:imagePathStr];
+                [self test:imagePathStr];
             }
         }
     }];
 }
 
-- (void)test {
+- (void)test:(NSString *)imagePathStr {
     NSError *error = nil;
-    self.fcrn = [[ML_MODEL_CLASS alloc] init];
-    self.model = [VNCoreMLModel modelForMLModel:self.fcrn.model error:&error];
-    NSString *imagePath = @"/Users/dadler/Downloads/outfolder/2.jpg";
+    NSString *imagePath = imagePathStr;
     NSImage *image = [[NSImage alloc] initWithContentsOfFile:imagePath];
     
     VNRequestCompletionHandler completionHandler =  ^(VNRequest *request, NSError * _Nullable error) {
@@ -115,6 +117,9 @@
                                                                          pixelSizeInBytes:pixelSizeInBytes
                                                                                     sizeX:sizeX
                                                                                     sizeY:sizeY];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.imageView setImage:depthImage32];
+                    });
                     
                     NSData* jpegData = [depthImage32 imageJPEGRepresentationWithCompressionFactor:0.80f];
                     [jpegData writeToFile:@"/Users/dadler/Downloads/outfolder/2_"ML_MODEL_CLASS_NAME_STRING".jpg" atomically:YES];
