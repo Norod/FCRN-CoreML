@@ -7,8 +7,13 @@
 //
 
 #import "ViewController.h"
-#import "FCRN.h"
 
+//ML_MODEL_CLASS_NAME is defined in "User defined build settings"
+//ML_MODEL_CLASS_HEADER_STRING=\"$(ML_MODEL_CLASS_NAME).h\"
+//ML_MODEL_CLASS=$(ML_MODEL_CLASS_NAME)
+//ML_MODEL_CLASS_NAME_STRING=@\"$(ML_MODEL_CLASS_NAME)\"
+
+#import ML_MODEL_CLASS_HEADER_STRING
 #import "ImagePlatform.h"
 
 @import CoreML;
@@ -18,7 +23,7 @@
 
 @interface ViewController ()
 
-@property (nonatomic, strong) FCRN *fcrn;
+@property (nonatomic, strong) ML_MODEL_CLASS *fcrn;
 @property (nonatomic, strong) VNCoreMLModel *model;
 @property (nonatomic, strong) VNCoreMLRequest *request;
 @property (nonatomic, strong) VNImageRequestHandler *handler;
@@ -47,7 +52,7 @@
 
 - (void)test {
     NSError *error = nil;
-    self.fcrn = [[FCRN alloc] init];
+    self.fcrn = [[ML_MODEL_CLASS alloc] init];
     self.model = [VNCoreMLModel modelForMLModel:self.fcrn.model error:&error];
     NSString *imagePath = @"/Users/dadler/Downloads/outfolder/2.jpg";
     NSImage *image = [[NSImage alloc] initWithContentsOfFile:imagePath];
@@ -76,7 +81,7 @@
                                                                                     sizeY:sizeY];
                     
                     NSData* jpegData = [depthImage32 imageJPEGRepresentationWithCompressionFactor:0.80f];
-                    [jpegData writeToFile:@"/Users/dadler/Downloads/outfolder/2_fcrn32.jpg" atomically:YES];
+                    [jpegData writeToFile:@"/Users/dadler/Downloads/outfolder/2_"ML_MODEL_CLASS_NAME_STRING".jpg" atomically:YES];
                     
                 }
             }
