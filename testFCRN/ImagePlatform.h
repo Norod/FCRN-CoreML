@@ -54,10 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (IMAGE_TYPE*)imageFromCVPixelBufferRef:(CVPixelBufferRef)cvPixelBufferRef
                         imageOrientation:(UIImageOrientation)imageOrientation;
 
-- (BOOL)setupPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef
+- (BOOL)setupPixelBuffer:(CVPixelBufferRef _Nonnull *_Nullable)pPixelBufferRef
          pixelFormatType:(OSType)pixelFormatType
                 withRect:(CGRect)rect;
-- (void)teardownPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef;
+- (void)teardownPixelBuffer:(CVPixelBufferRef _Nonnull *_Nonnull)pPixelBufferRef;
+
+- (IMAGE_TYPE*)createBGRADepthImageFromResultData:(uint8_t *)pData
+                                 pixelSizeInBytes:(uint8_t)pixelSizeInBytes
+                                            sizeX:(int)sizeX
+                                            sizeY:(int)sizeY;
 
 @end
 

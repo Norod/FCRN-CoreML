@@ -9,9 +9,9 @@
 #import "ImagePlatform.h"
 
 @import CoreImage;
+@import Accelerate;
 
 @implementation IMAGE_TYPE (ImagePlatform)
-
 
 - (NSData*)imageJPEGRepresentationWithCompressionFactor:(CGFloat)compressionFactor {
 #ifdef MACOS_TARGET
@@ -55,7 +55,7 @@
 {
     self = [super init];
     if (self) {
-          [self setupCoreContext];
+        [self setupCoreContext];
     }
     return self;
 }
@@ -82,9 +82,9 @@
     self.imagePlatformCoreContext = nil;
     
     if (_colorSpaceRGB) {
-         CGColorSpaceRelease(_colorSpaceRGB);
-         _colorSpaceRGB = NULL;
-     }
+        CGColorSpaceRelease(_colorSpaceRGB);
+        _colorSpaceRGB = NULL;
+    }
 }
 
 - (CGColorSpaceRef) colorSpaceRGB {
@@ -94,7 +94,7 @@
 #pragma mark - Pixel buffer reference to image
 
 - (IMAGE_TYPE*)imageFromCVPixelBufferRef:(CVPixelBufferRef)cvPixelBufferRef
-                       imageOrientation:(UIImageOrientation)imageOrientation
+                        imageOrientation:(UIImageOrientation)imageOrientation
 {
     IMAGE_TYPE* imageFromCVPixelBufferRef = nil;
     
@@ -137,29 +137,29 @@
 
 - (CGImagePropertyOrientation) CGImagePropertyOrientationForUIImageOrientation:(UIImageOrientation)uiOrientation {
     switch (uiOrientation) {
-        default:
-        case UIImageOrientationUp: return kCGImagePropertyOrientationUp;
-        case UIImageOrientationDown: return kCGImagePropertyOrientationDown;
-        case UIImageOrientationLeft: return kCGImagePropertyOrientationLeft;
-        case UIImageOrientationRight: return kCGImagePropertyOrientationRight;
-        case UIImageOrientationUpMirrored: return kCGImagePropertyOrientationUpMirrored;
-        case UIImageOrientationDownMirrored: return kCGImagePropertyOrientationDownMirrored;
-        case UIImageOrientationLeftMirrored: return kCGImagePropertyOrientationLeftMirrored;
-        case UIImageOrientationRightMirrored: return kCGImagePropertyOrientationRightMirrored;
+    default:
+    case UIImageOrientationUp: return kCGImagePropertyOrientationUp;
+    case UIImageOrientationDown: return kCGImagePropertyOrientationDown;
+    case UIImageOrientationLeft: return kCGImagePropertyOrientationLeft;
+    case UIImageOrientationRight: return kCGImagePropertyOrientationRight;
+    case UIImageOrientationUpMirrored: return kCGImagePropertyOrientationUpMirrored;
+    case UIImageOrientationDownMirrored: return kCGImagePropertyOrientationDownMirrored;
+    case UIImageOrientationLeftMirrored: return kCGImagePropertyOrientationLeftMirrored;
+    case UIImageOrientationRightMirrored: return kCGImagePropertyOrientationRightMirrored;
     }
 }
 
 -(UIImageOrientation) UIImageOrientationForCGImagePropertyOrientation:(CGImagePropertyOrientation)cgOrientation {
     switch (cgOrientation) {
-        default:
-        case kCGImagePropertyOrientationUp: return UIImageOrientationUp;
-        case kCGImagePropertyOrientationDown: return UIImageOrientationDown;
-        case kCGImagePropertyOrientationLeft: return UIImageOrientationLeft;
-        case kCGImagePropertyOrientationRight: return UIImageOrientationRight;
-        case kCGImagePropertyOrientationUpMirrored: return UIImageOrientationUpMirrored;
-        case kCGImagePropertyOrientationDownMirrored: return UIImageOrientationDownMirrored;
-        case kCGImagePropertyOrientationLeftMirrored: return UIImageOrientationLeftMirrored;
-        case kCGImagePropertyOrientationRightMirrored: return UIImageOrientationRightMirrored;
+    default:
+    case kCGImagePropertyOrientationUp: return UIImageOrientationUp;
+    case kCGImagePropertyOrientationDown: return UIImageOrientationDown;
+    case kCGImagePropertyOrientationLeft: return UIImageOrientationLeft;
+    case kCGImagePropertyOrientationRight: return UIImageOrientationRight;
+    case kCGImagePropertyOrientationUpMirrored: return UIImageOrientationUpMirrored;
+    case kCGImagePropertyOrientationDownMirrored: return UIImageOrientationDownMirrored;
+    case kCGImagePropertyOrientationLeftMirrored: return UIImageOrientationLeftMirrored;
+    case kCGImagePropertyOrientationRightMirrored: return UIImageOrientationRightMirrored;
     }
 }
 
@@ -168,7 +168,7 @@
 
 - (void)teardownPixelBuffer:(CVPixelBufferRef*)pPixelBufferRef {
     if (*pPixelBufferRef != NULL) {
-//        GTLog(@"teardownPixelBuffer: \"%@\"", (*pPixelBufferRef));
+        //        GTLog(@"teardownPixelBuffer: \"%@\"", (*pPixelBufferRef));
         CVPixelBufferRelease(*pPixelBufferRef);
         *pPixelBufferRef = NULL;
     }
@@ -178,9 +178,9 @@
          pixelFormatType:(OSType)pixelFormatType
                 withRect:(CGRect)rect {
     
-     if ((rect.size.width <= 0) || (rect.size.height <= 0)) {
-         return NO;
-     }
+    if ((rect.size.width <= 0) || (rect.size.height <= 0)) {
+        return NO;
+    }
     
     if (*pPixelBufferRef != NULL) {
         [self teardownPixelBuffer:pPixelBufferRef];
@@ -209,9 +209,60 @@
         return NO;
     }
     
-   NSLog(@"Done: setupPixelBuffer: \"%@\" withRect: \"{%f, %f, %f, %f}\"", (*pPixelBufferRef), rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+    NSLog(@"Done: setupPixelBuffer: \"%@\" withRect: \"{%f, %f, %f, %f}\"", (*pPixelBufferRef), rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
     
     return YES;
 }
+
+#pragma mark - Depth buffer proccesing
+
+- (IMAGE_TYPE*)createBGRADepthImageFromResultData:(uint8_t *)pData
+                                 pixelSizeInBytes:(uint8_t)pixelSizeInBytes
+                                            sizeX:(int)sizeX
+                                            sizeY:(int)sizeY {
+    
+    char *grayBuff = malloc(sizeY*sizeX*sizeof(char));
+    if (pixelSizeInBytes == 8) {
+        double maxVD = 0.;
+        double minVD = 0.;
+        vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
+        vDSP_minvD((const double *)pData, 1, &minVD, sizeY*sizeX);
+        const  double scalar = 255./maxVD;
+        double *doubleBuff1 = malloc(sizeY*sizeX*sizeof(double));
+        vDSP_vsmulD((const double *)pData, 1, &scalar, doubleBuff1, 1, sizeY*sizeX);
+        double midVD = ((maxVD - minVD) / 2.);
+        const double offset = -(scalar * midVD);
+        double *doubleBuff2 = malloc(sizeY*sizeX*sizeof(double));
+        vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, sizeY*sizeX);
+        free(doubleBuff1);
+        vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  sizeY*sizeX);
+        free(doubleBuff2);
+    }
+    
+    CVPixelBufferRef grayImageBuffer = NULL;
+    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
+    [self setupPixelBuffer:&grayImageBuffer
+           pixelFormatType:kCVPixelFormatType_32BGRA
+                  withRect:pixelBufferRect];
+    
+    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
+    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+    
+    const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
+    const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
+    
+    vImageConvert_Planar8ToBGRX8888(&grayBuffV, &grayBuffV, &grayBuffV, 0xFF, &rgbaBuffV, (vImage_Flags)0);
+    
+    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+    
+    free(grayBuff);
+    
+    IMAGE_TYPE *depthImage32 = [self imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
+    
+    [self teardownPixelBuffer:&grayImageBuffer];
+    
+    return depthImage32;
+}
+
 
 @end
