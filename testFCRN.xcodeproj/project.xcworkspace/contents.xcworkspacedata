@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:testFCRN.xcodeproj">
+      location = "self:../../../../../../../../../System/Volumes/Data/Users/dadler/Projects/GitHub/ML/models/FCRN/testFCRN">
    </FileRef>
 </Workspace>

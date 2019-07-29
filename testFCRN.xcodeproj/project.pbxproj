@@ -29,7 +29,6 @@
 		E8201F4722EF1A1D0098B7DB /* FCRN.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = FCRN.mlmodel; sourceTree = "<group>"; };
 		E8201F4922EF1A250098B7DB /* FCRNFP16.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = FCRNFP16.mlmodel; sourceTree = "<group>"; };
 		E8201F8222EF1C840098B7DB /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		E8201F8322EF1C840098B7DB /* macOSImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macOSImageViewController.h; sourceTree = "<group>"; };
 		E8201F8522EF1C840098B7DB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E8201F8622EF1C840098B7DB /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		E8201F8722EF1C840098B7DB /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
@@ -37,8 +36,8 @@
 		E8201F8922EF1C840098B7DB /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		E8201F8A22EF1C840098B7DB /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E8201F9722EF1D570098B7DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		E8201FA622EF1DDD0098B7DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = testFCRN/macOS/Base.lproj/Main.storyboard; sourceTree = SOURCE_ROOT; };
-		E8201FAC22EF24410098B7DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = ../../../../../../../../../../../../../Users/dadler/Projects/GitHub/ML/models/FCRN/testFCRN/testFCRN/macOS/en.lproj/Main.strings; sourceTree = "<group>"; };
+		E8201FA622EF1DDD0098B7DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		E8201FAC22EF24410098B7DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		E896783D22EF013D002D34D2 /* testFCRN16.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testFCRN16.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A7365A22ED7BE400309FD0 /* testFCRN32.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testFCRN32.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A7368422ED7D6B00309FD0 /* ImagePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePlatform.h; sourceTree = "<group>"; };
@@ -71,7 +70,7 @@
 				E8201F4722EF1A1D0098B7DB /* FCRN.mlmodel */,
 			);
 			name = mlmodels;
-			path = ../../../../../../../../../System/Volumes/Data/Users/dadler/Projects/GitHub/ML/models/FCRN/testFCRN/mlmodels;
+			path = ../mlmodels;
 			sourceTree = "<group>";
 		};
 		E8201F4B22EF1B1D0098B7DB /* shared */ = {
@@ -92,14 +91,12 @@
 				E8201F8222EF1C840098B7DB /* AppDelegate.h */,
 				E8201F8922EF1C840098B7DB /* AppDelegate.m */,
 				E8201F8522EF1C840098B7DB /* Info.plist */,
-				E8201F8322EF1C840098B7DB /* macOSImageViewController.h */,
 				E8201F8A22EF1C840098B7DB /* main.m */,
 				E8201F8822EF1C840098B7DB /* testFCRN.entitlements */,
 				E8201F8622EF1C840098B7DB /* ViewController.h */,
 				E8201F8722EF1C840098B7DB /* ViewController.m */,
 			);
-			name = macOS;
-			path = ../../../../../../../../../System/Volumes/Data/Users/dadler/Projects/GitHub/ML/models/FCRN/testFCRN/testFCRN/macOS;
+			path = macOS;
 			sourceTree = "<group>";
 		};
 		E8A7365122ED7BE300309FD0 = {
@@ -355,7 +352,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ML_MODEL_CLASS_NAME = "";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -414,7 +411,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ML_MODEL_CLASS_NAME = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

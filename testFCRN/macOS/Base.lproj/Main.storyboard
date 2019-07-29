@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14845" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14845"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -704,7 +705,7 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController showSeguePresentationStyle="single" id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="viewController" id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="357"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -733,6 +734,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="controlContent" size="11"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="openImageAction:" target="XfG-lQ-9wD" id="Lc9-dT-Or5"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
@@ -748,6 +752,10 @@
                             <constraint firstItem="eUm-Lt-vqK" firstAttribute="centerX" secondItem="0WR-tN-hFX" secondAttribute="centerX" id="xVi-Oj-ShR"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="imageView" destination="eUm-Lt-vqK" id="a4O-ap-1pX"/>
+                        <outlet property="textView" destination="0WR-tN-hFX" id="I18-Md-CD9"/>
+                    </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
