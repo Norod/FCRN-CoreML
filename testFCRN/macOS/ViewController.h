@@ -10,6 +10,9 @@
 
 @interface ViewController : NSViewController
 
+@property (nonatomic, weak) IBOutlet NSImageView *imageView;    // the image to display
+@property (nonatomic, weak) IBOutlet NSTextField *textView;     // the image file name to display
+
 
 @end
 

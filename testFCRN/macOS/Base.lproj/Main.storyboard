@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11134" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14845" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11134"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14845"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -673,7 +674,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModuleProvider=""/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -682,7 +683,7 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
+                <windowController showSeguePresentationStyle="single" id="B8D-0N-5wS" sceneMemberID="viewController">
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -703,15 +704,54 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController showSeguePresentationStyle="single" id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="357"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="eUm-Lt-vqK">
+                                <rect key="frame" x="17" y="51" width="450" height="295"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="PlW-bn-0Wz"/>
+                            </imageView>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WR-tN-hFX">
+                                <rect key="frame" x="20" y="27" width="444" height="19"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="19" id="3gT-Z8-psk"/>
+                                </constraints>
+                                <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" state="on" alignment="center" placeholderString="Please open an image" id="nQ1-yq-3DT">
+                                    <font key="font" metaFont="controlContent" size="11"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X46-Eb-qkv">
+                                <rect key="frame" x="22" y="-1" width="50" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="lKy-DZ-ybs"/>
+                                </constraints>
+                                <buttonCell key="cell" type="roundTextured" title="Open…" bezelStyle="texturedRounded" alignment="center" controlSize="small" state="on" borderStyle="border" inset="2" id="ep8-pQ-nvq">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="controlContent" size="11"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="7Z4-ot-qDx"/>
+                            <constraint firstAttribute="trailing" secondItem="eUm-Lt-vqK" secondAttribute="trailing" constant="16" id="8ym-ow-vA5"/>
+                            <constraint firstItem="X46-Eb-qkv" firstAttribute="top" secondItem="0WR-tN-hFX" secondAttribute="bottom" constant="3" id="MUo-oR-wTi"/>
+                            <constraint firstAttribute="trailing" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="408" id="b9c-kF-w80"/>
+                            <constraint firstAttribute="bottom" secondItem="X46-Eb-qkv" secondAttribute="bottom" id="cga-pD-pWH"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="14" id="f0v-Hr-15w"/>
+                            <constraint firstItem="0WR-tN-hFX" firstAttribute="top" secondItem="eUm-Lt-vqK" secondAttribute="bottom" constant="8" symbolic="YES" id="iaa-Cp-QGK"/>
+                            <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="pZM-2j-8ba"/>
+                            <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="X46-Eb-qkv" secondAttribute="leading" id="rAM-jz-WnX"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="centerX" secondItem="0WR-tN-hFX" secondAttribute="centerX" id="xVi-Oj-ShR"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="655"/>
+            <point key="canvasLocation" x="90" y="713.5"/>
         </scene>
     </scenes>
 </document>

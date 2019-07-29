@@ -50,6 +50,42 @@
     // Update the view, if already loaded.
 }
 
+// -------------------------------------------------------------------------------
+//    configureImage:imagePathStr
+// -------------------------------------------------------------------------------
+- (void)configureImage:(NSString *)imagePathStr
+{
+    // load the image from the given path string and set is to the NSImageView
+    NSImage* image = [[NSImage alloc] initWithContentsOfFile:imagePathStr];
+    [self.imageView setImage:image];
+    [self.textView setStringValue:[imagePathStr lastPathComponent]];    // display the file name
+}
+
+// -------------------------------------------------------------------------------
+//    openImageAction:sender
+//
+//    User clicked the "Open" button, open the NSOpenPanel to choose an image.
+// -------------------------------------------------------------------------------
+- (IBAction)openImageAction:(id)sender
+{
+    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    
+    NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"gif", @"png", @"tiff", nil];
+    [openPanel setAllowsMultipleSelection:NO];
+    [openPanel setMessage:@"Choose an image file to display:"];
+    [openPanel setAllowedFileTypes:fileTypes];
+    [openPanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Picture"]];
+    [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+        if (result == NSModalResponseOK)
+        {
+            if ([[openPanel URL] isFileURL])
+            {
+                [self configureImage:[[openPanel URL] path]];
+            }
+        }
+    }];
+}
+
 - (void)test {
     NSError *error = nil;
     self.fcrn = [[ML_MODEL_CLASS alloc] init];
