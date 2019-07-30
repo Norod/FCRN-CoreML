@@ -93,25 +93,32 @@
 
 #pragma mark - Pixel buffer reference to image
 
-- (IMAGE_TYPE*)imageFromCVPixelBufferRef:(CVPixelBufferRef)cvPixelBufferRef
-                        imageOrientation:(UIImageOrientation)imageOrientation
-{
-    IMAGE_TYPE* imageFromCVPixelBufferRef = nil;
-    
+- (CIImage *)ciImageFromPixelBuffer:(CVPixelBufferRef _Nonnull)cvPixelBufferRef
+                   imageOrientation:(UIImageOrientation)imageOrientation {
 #ifdef MACOS_TARGET
     CIImage *ciImageBeforeOrientation = nil;
     ciImageBeforeOrientation = [CIImage imageWithCVImageBuffer:cvPixelBufferRef];
     CGImagePropertyOrientation orientation = [self CGImagePropertyOrientationForUIImageOrientation:imageOrientation];
     CIImage *ciImage = [ciImageBeforeOrientation imageByApplyingOrientation:orientation];
+    return ciImage;
 #else
-    CIImage *ciImage =  [CIImage imageWithCVImageBuffer:cvPixelBufferRef];
+    return ([CIImage imageWithCVImageBuffer:cvPixelBufferRef]);
 #endif
+}
+
+- (IMAGE_TYPE*)imageFromCVPixelBufferRef:(CVPixelBufferRef)cvPixelBufferRef
+                        imageOrientation:(UIImageOrientation)imageOrientation
+{
+    IMAGE_TYPE* imageFromCVPixelBufferRef = nil;
+    
+    CIImage * ciImage = [self ciImageFromPixelBuffer:cvPixelBufferRef imageOrientation:imageOrientation];
+    CGRect imageRect = CGRectMake(0, 0,
+                                  CVPixelBufferGetWidth(cvPixelBufferRef),
+                                  CVPixelBufferGetHeight(cvPixelBufferRef));
     
     CGImageRef imageRef = [self.imagePlatformCoreContext
                            createCGImage:ciImage
-                           fromRect:CGRectMake(0, 0,
-                                               CVPixelBufferGetWidth(cvPixelBufferRef),
-                                               CVPixelBufferGetHeight(cvPixelBufferRef))];
+                           fromRect:imageRect];
     
     if (imageRef) {
 #ifdef MACOS_TARGET
@@ -121,9 +128,8 @@
         
         
         imageFromCVPixelBufferRef = [[IMAGE_TYPE alloc] initWithCGImage:imageRef size:imageSize] ;
-        
 #else
-        uiImageFromCVPixelBufferRef = [IMAGE_TYPE imageWithCGImage:imageRef scale:1.0 orientation:imageOrientation];
+        imageFromCVPixelBufferRef = [IMAGE_TYPE imageWithCGImage:imageRef scale:1.0 orientation:imageOrientation];
 #endif
         
         CGImageRelease(imageRef);
@@ -216,29 +222,9 @@
 
 #pragma mark - Depth buffer proccesing
 
-- (IMAGE_TYPE*)createBGRADepthImageFromResultData:(uint8_t *)pData
-                                 pixelSizeInBytes:(uint8_t)pixelSizeInBytes
+- (CVPixelBufferRef)createPixelBufferFromGrayData:(char *)grayBuff
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY {
-    
-    char *grayBuff = malloc(sizeY*sizeX*sizeof(char));
-    if (pixelSizeInBytes == 8) {
-        double maxVD = 0.;
-        double minVD = 0.;
-        vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
-        vDSP_minvD((const double *)pData, 1, &minVD, sizeY*sizeX);
-        const  double scalar = 255./maxVD;
-        double *doubleBuff1 = malloc(sizeY*sizeX*sizeof(double));
-        vDSP_vsmulD((const double *)pData, 1, &scalar, doubleBuff1, 1, sizeY*sizeX);
-        double midVD = ((maxVD - minVD) / 2.);
-        const double offset = -(scalar * midVD);
-        double *doubleBuff2 = malloc(sizeY*sizeX*sizeof(double));
-        vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, sizeY*sizeX);
-        free(doubleBuff1);
-        vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  sizeY*sizeX);
-        free(doubleBuff2);
-    }
-    
     CVPixelBufferRef grayImageBuffer = NULL;
     CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
     [self setupPixelBuffer:&grayImageBuffer
@@ -254,6 +240,33 @@
     vImageConvert_Planar8ToBGRX8888(&grayBuffV, &grayBuffV, &grayBuffV, 0xFF, &rgbaBuffV, (vImage_Flags)0);
     
     CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+    return grayImageBuffer;
+}
+
+- (IMAGE_TYPE*)createBGRADepthImageFromResultData:(uint8_t *)pData
+                                 pixelSizeInBytes:(uint8_t)pixelSizeInBytes
+                                            sizeX:(int)sizeX
+                                            sizeY:(int)sizeY {
+    
+    NSAssert((pixelSizeInBytes == 8), @"Expected double sized elements");
+    
+    char *grayBuff = malloc(sizeY*sizeX*sizeof(char));
+    
+    double maxVD = 0.;
+    double minVD = 0.;
+    vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
+    vDSP_minvD((const double *)pData, 1, &minVD, sizeY*sizeX);
+    const  double scalar = 255./maxVD;
+    double *doubleBuff1 = malloc(sizeY*sizeX*sizeof(double));
+    vDSP_vsmulD((const double *)pData, 1, &scalar, doubleBuff1, 1, sizeY*sizeX);
+    const double offset = -(scalar * (minVD / 2.));
+    double *doubleBuff2 = malloc(sizeY*sizeX*sizeof(double));
+    vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, sizeY*sizeX);
+    free(doubleBuff1);
+    vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  sizeY*sizeX);
+    free(doubleBuff2);
+        
+    CVPixelBufferRef grayImageBuffer = [self createPixelBufferFromGrayData:grayBuff sizeX:sizeX sizeY:sizeY];
     
     free(grayBuff);
     

@@ -55,12 +55,28 @@
 // -------------------------------------------------------------------------------
 //    configureImage:imagePathStr
 // -------------------------------------------------------------------------------
-- (void)configureImage:(NSString *)imagePathStr
+- (NSImage*)configureImage:(NSString *)imagePathStr
 {
     // load the image from the given path string and set is to the NSImageView
+//    NSImage* originalImage = [[NSImage alloc] initWithContentsOfFile:imagePathStr];
+//    CGFloat width = originalImage.size.width;
+//    CGFloat height = originalImage.size.height;
+//    if (width > height) {
+//        if (height / width != 0.80f) {
+//            width =  height / 0.80f;
+//        }
+//    } else {
+//        if (width / height != 0.80f) {
+//            height  = width * 0.80;
+//        }
+//    }
+//
+//    CGImageRef imageRef = [originalImage asCGImageRef];
+//    NSImage *image = [[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(width, height)];
     NSImage* image = [[NSImage alloc] initWithContentsOfFile:imagePathStr];
     [self.imageView setImage:image];
     [self.textView setStringValue:[imagePathStr lastPathComponent]];    // display the file name
+    return image;
 }
 
 // -------------------------------------------------------------------------------
@@ -83,18 +99,16 @@
             if ([[openPanel URL] isFileURL])
             {
                 NSString* imagePathStr = [[openPanel URL] path];
-                [self configureImage:imagePathStr];
-                [self test:imagePathStr];
+                NSImage *image = [self configureImage:imagePathStr];
+                [self test:image];
             }
         }
     }];
 }
 
-- (void)test:(NSString *)imagePathStr {
+- (void)test:(NSImage *)image {
     NSError *error = nil;
-    NSString *imagePath = imagePathStr;
-    NSImage *image = [[NSImage alloc] initWithContentsOfFile:imagePath];
-    
+        
     VNRequestCompletionHandler completionHandler =  ^(VNRequest *request, NSError * _Nullable error) {
         NSArray *results = request.results;
         NSLog(@"results = \"%@\"", results);
@@ -118,11 +132,31 @@
                                                                                     sizeX:sizeX
                                                                                     sizeY:sizeY];
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.imageView setImage:depthImage32];
+                        [self.depthImageView setImage:depthImage32];
                     });
                     
+                    NSTimeInterval ti = [[NSDate date] timeIntervalSince1970];
+                    
                     NSData* jpegData = [depthImage32 imageJPEGRepresentationWithCompressionFactor:0.80f];
-                    [jpegData writeToFile:@"/Users/dadler/Downloads/outfolder/2_"ML_MODEL_CLASS_NAME_STRING".jpg" atomically:YES];
+                    NSString *outputFile = [NSString stringWithFormat:@"/Users/dadler/Downloads/%@_%@_depth.jpg",
+                                            @((int)ti), ML_MODEL_CLASS_NAME_STRING];
+                    BOOL didWrite = [jpegData writeToFile:outputFile atomically:YES];
+                    if (didWrite) {
+                        NSLog(@"Wrote to \"%@\"", outputFile);
+                    } else {
+                        NSLog(@"Failed writing to \"%@\"", outputFile);
+                    }
+                    
+                    jpegData = [self.imageView.image imageJPEGRepresentationWithCompressionFactor:0.80f];
+                    outputFile = [NSString stringWithFormat:@"/Users/dadler/Downloads/%@_%@.jpg",
+                                  @((int)ti), ML_MODEL_CLASS_NAME_STRING];
+                    
+                    didWrite = [jpegData writeToFile:outputFile atomically:YES];
+                    if (didWrite) {
+                        NSLog(@"Wrote to \"%@\"", outputFile);
+                    } else {
+                        NSLog(@"Failed writing to \"%@\"", outputFile);
+                    }
                     
                 }
             }

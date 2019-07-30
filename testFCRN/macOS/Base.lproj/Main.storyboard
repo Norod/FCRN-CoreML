@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14845" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14854.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14845"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14854.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -707,32 +707,39 @@
             <objects>
                 <viewController storyboardIdentifier="viewController" id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="357"/>
+                        <rect key="frame" x="0.0" y="0.0" width="516" height="320"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="eUm-Lt-vqK">
-                                <rect key="frame" x="17" y="51" width="450" height="295"/>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="PlW-bn-0Wz"/>
+                                <rect key="frame" x="17" y="78" width="240" height="225"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="234" id="uCd-hL-HbY"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="PlW-bn-0Wz"/>
+                            </imageView>
+                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="YEg-Hn-NDq">
+                                <rect key="frame" x="259" y="78" width="240" height="225"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="wph-Jb-Elv"/>
                             </imageView>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WR-tN-hFX">
-                                <rect key="frame" x="20" y="27" width="444" height="19"/>
+                                <rect key="frame" x="20" y="52" width="478" height="19"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="19" id="3gT-Z8-psk"/>
                                 </constraints>
-                                <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" state="on" alignment="center" placeholderString="Please open an image" id="nQ1-yq-3DT">
-                                    <font key="font" metaFont="controlContent" size="11"/>
+                                <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="Please open an image" id="nQ1-yq-3DT">
+                                    <font key="font" metaFont="menu" size="11"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X46-Eb-qkv">
-                                <rect key="frame" x="22" y="-1" width="50" height="25"/>
+                                <rect key="frame" x="22" y="19" width="56" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="lKy-DZ-ybs"/>
                                 </constraints>
                                 <buttonCell key="cell" type="roundTextured" title="Open…" bezelStyle="texturedRounded" alignment="center" controlSize="small" state="on" borderStyle="border" inset="2" id="ep8-pQ-nvq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="controlContent" size="11"/>
+                                    <font key="font" metaFont="menu" size="11"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="openImageAction:" target="XfG-lQ-9wD" id="Lc9-dT-Or5"/>
@@ -740,26 +747,31 @@
                             </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="7Z4-ot-qDx"/>
-                            <constraint firstAttribute="trailing" secondItem="eUm-Lt-vqK" secondAttribute="trailing" constant="16" id="8ym-ow-vA5"/>
-                            <constraint firstItem="X46-Eb-qkv" firstAttribute="top" secondItem="0WR-tN-hFX" secondAttribute="bottom" constant="3" id="MUo-oR-wTi"/>
-                            <constraint firstAttribute="trailing" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="408" id="b9c-kF-w80"/>
-                            <constraint firstAttribute="bottom" secondItem="X46-Eb-qkv" secondAttribute="bottom" id="cga-pD-pWH"/>
-                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="14" id="f0v-Hr-15w"/>
-                            <constraint firstItem="0WR-tN-hFX" firstAttribute="top" secondItem="eUm-Lt-vqK" secondAttribute="bottom" constant="8" symbolic="YES" id="iaa-Cp-QGK"/>
+                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="width" secondItem="eUm-Lt-vqK" secondAttribute="width" id="E54-6z-fZ1"/>
+                            <constraint firstItem="X46-Eb-qkv" firstAttribute="top" secondItem="0WR-tN-hFX" secondAttribute="bottom" constant="8" id="MUo-oR-wTi"/>
+                            <constraint firstAttribute="trailing" secondItem="YEg-Hn-NDq" secondAttribute="trailing" constant="20" id="OUs-d7-Rh9"/>
+                            <constraint firstItem="0WR-tN-hFX" firstAttribute="top" secondItem="eUm-Lt-vqK" secondAttribute="bottom" constant="10" id="Ooz-Kq-zAz"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="VYh-6i-i5h"/>
+                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="height" secondItem="eUm-Lt-vqK" secondAttribute="height" id="Vk9-lw-x41"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="centerY" secondItem="YEg-Hn-NDq" secondAttribute="centerY" id="Yhz-K8-Hxk"/>
+                            <constraint firstAttribute="trailing" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="438" id="b9c-kF-w80"/>
+                            <constraint firstAttribute="bottom" secondItem="X46-Eb-qkv" secondAttribute="bottom" constant="20" id="cga-pD-pWH"/>
                             <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="pZM-2j-8ba"/>
                             <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="X46-Eb-qkv" secondAttribute="leading" id="rAM-jz-WnX"/>
-                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="centerX" secondItem="0WR-tN-hFX" secondAttribute="centerX" id="xVi-Oj-ShR"/>
+                            <constraint firstAttribute="trailing" secondItem="0WR-tN-hFX" secondAttribute="trailing" constant="20" id="rS1-mL-m1o"/>
+                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="leading" secondItem="eUm-Lt-vqK" secondAttribute="trailing" constant="8" id="rw1-3O-wgY"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="ypI-oH-xb3"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="depthImageView" destination="YEg-Hn-NDq" id="ZjJ-N1-d5m"/>
                         <outlet property="imageView" destination="eUm-Lt-vqK" id="a4O-ap-1pX"/>
                         <outlet property="textView" destination="0WR-tN-hFX" id="I18-Md-CD9"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="90" y="713.5"/>
+            <point key="canvasLocation" x="105" y="695"/>
         </scene>
     </scenes>
 </document>
