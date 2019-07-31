@@ -58,23 +58,11 @@
 - (NSImage*)configureImage:(NSString *)imagePathStr
 {
     // load the image from the given path string and set is to the NSImageView
-//    NSImage* originalImage = [[NSImage alloc] initWithContentsOfFile:imagePathStr];
-//    CGFloat width = originalImage.size.width;
-//    CGFloat height = originalImage.size.height;
-//    if (width > height) {
-//        if (height / width != 0.80f) {
-//            width =  height / 0.80f;
-//        }
-//    } else {
-//        if (width / height != 0.80f) {
-//            height  = width * 0.80;
-//        }
-//    }
-//
-//    CGImageRef imageRef = [originalImage asCGImageRef];
-//    NSImage *image = [[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(width, height)];
     NSImage* image = [[NSImage alloc] initWithContentsOfFile:imagePathStr];
     [self.imageView setImage:image];
+    self.imageView.imageScaling = NSImageScaleProportionallyUpOrDown;
+//    self.imageView.layer.contentsGravity = kCAGravityResizeAspectFill;
+//    [self.imageView.layer setNeedsLayout];
     [self.textView setStringValue:[imagePathStr lastPathComponent]];    // display the file name
     return image;
 }
@@ -100,13 +88,50 @@
             {
                 NSString* imagePathStr = [[openPanel URL] path];
                 NSImage *image = [self configureImage:imagePathStr];
-                [self test:image];
+                [self predictDepthMapFromImage:image];
             }
         }
     }];
 }
 
-- (void)test:(NSImage *)image {
+// -------------------------------------------------------------------------------
+//    openImageAction:sender
+//
+//    User clicked the "Save" button, open the NSOpenPanel to save the images.
+// -------------------------------------------------------------------------------
+- (IBAction)saveImageAction:(id)sender
+{
+    NSImage *depthImage = [self.depthImageView image];
+    if (depthImage == nil) {
+        return;
+    }
+    
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"png", @"tiff", nil];
+    [savePanel setAllowedFileTypes:fileTypes];
+    [savePanel setAllowsOtherFileTypes:NO];
+    [savePanel setMessage:@"Save depth image file:"];
+    [savePanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Pictures/"]];
+    [savePanel setCanCreateDirectories:YES];
+    [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+        if (result == NSModalResponseOK) {
+            if ([[savePanel URL] isFileURL])
+            {
+                NSString* depthImagePathStr = [[savePanel URL] path];
+                
+                NSData* jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
+                BOOL didWrite = [jpegData writeToFile:depthImagePathStr atomically:YES];
+                if (didWrite) {
+                    NSLog(@"Wrote to \"%@\"", depthImagePathStr);
+                } else {
+                    NSLog(@"Failed writing to \"%@\"", depthImagePathStr);
+                }
+            }
+        }
+    }];
+}
+
+- (void)predictDepthMapFromImage:(NSImage *)image {
     NSError *error = nil;
         
     VNRequestCompletionHandler completionHandler =  ^(VNRequest *request, NSError * _Nullable error) {
@@ -133,31 +158,9 @@
                                                                                     sizeY:sizeY];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [self.depthImageView setImage:depthImage32];
+                        self.depthImageView.layer.contentsGravity = kCAGravityResizeAspect;
+                        [self.saveButton setEnabled:YES];
                     });
-                    
-                    NSTimeInterval ti = [[NSDate date] timeIntervalSince1970];
-                    
-                    NSData* jpegData = [depthImage32 imageJPEGRepresentationWithCompressionFactor:0.80f];
-                    NSString *outputFile = [NSString stringWithFormat:@"/Users/dadler/Downloads/%@_%@_depth.jpg",
-                                            @((int)ti), ML_MODEL_CLASS_NAME_STRING];
-                    BOOL didWrite = [jpegData writeToFile:outputFile atomically:YES];
-                    if (didWrite) {
-                        NSLog(@"Wrote to \"%@\"", outputFile);
-                    } else {
-                        NSLog(@"Failed writing to \"%@\"", outputFile);
-                    }
-                    
-                    jpegData = [self.imageView.image imageJPEGRepresentationWithCompressionFactor:0.80f];
-                    outputFile = [NSString stringWithFormat:@"/Users/dadler/Downloads/%@_%@.jpg",
-                                  @((int)ti), ML_MODEL_CLASS_NAME_STRING];
-                    
-                    didWrite = [jpegData writeToFile:outputFile atomically:YES];
-                    if (didWrite) {
-                        NSLog(@"Wrote to \"%@\"", outputFile);
-                    } else {
-                        NSLog(@"Failed writing to \"%@\"", outputFile);
-                    }
-                    
                 }
             }
         }

@@ -15,6 +15,8 @@
 @property (nonatomic, weak) IBOutlet NSImageView *depthImageView;    // the predicted depth map to display
 @property (nonatomic, weak) IBOutlet NSTextField *textView;         // the image file name to display
 
+@property (nonatomic, weak) IBOutlet NSButton    *saveButton;
+
 
 @end
 
