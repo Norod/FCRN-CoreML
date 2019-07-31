@@ -23,6 +23,8 @@
 		E8201FAA22EF1DDD0098B7DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E8201FA522EF1DDD0098B7DB /* Main.storyboard */; };
 		E896783222EF013D002D34D2 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
 		E8A7368622ED7D6B00309FD0 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
+		E8CB4B5022F1E21E00D924B2 /* ImageLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CB4B4F22F1E21E00D924B2 /* ImageLayerView.m */; };
+		E8CB4B5122F1E21E00D924B2 /* ImageLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CB4B4F22F1E21E00D924B2 /* ImageLayerView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +45,8 @@
 		E8A7368422ED7D6B00309FD0 /* ImagePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePlatform.h; sourceTree = "<group>"; };
 		E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePlatform.m; sourceTree = "<group>"; };
 		E8A7368722ED7DB600309FD0 /* TargetPlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetPlatform.h; sourceTree = "<group>"; };
+		E8CB4B4E22F1E21E00D924B2 /* ImageLayerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ImageLayerView.h; path = ../../../../../../../../../../System/Volumes/Data/Users/dadler/Projects/GitHub/ML/models/FCRN/testFCRN/testFCRN/macOS/ImageLayerView.h; sourceTree = "<group>"; };
+		E8CB4B4F22F1E21E00D924B2 /* ImageLayerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ImageLayerView.m; path = ../../../../../../../../../../System/Volumes/Data/Users/dadler/Projects/GitHub/ML/models/FCRN/testFCRN/testFCRN/macOS/ImageLayerView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +99,8 @@
 				E8201F8822EF1C840098B7DB /* testFCRN.entitlements */,
 				E8201F8622EF1C840098B7DB /* ViewController.h */,
 				E8201F8722EF1C840098B7DB /* ViewController.m */,
+				E8CB4B4E22F1E21E00D924B2 /* ImageLayerView.h */,
+				E8CB4B4F22F1E21E00D924B2 /* ImageLayerView.m */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -226,6 +232,7 @@
 			files = (
 				E896783222EF013D002D34D2 /* ImagePlatform.m in Sources */,
 				E8201F9222EF1C840098B7DB /* ViewController.m in Sources */,
+				E8CB4B5122F1E21E00D924B2 /* ImageLayerView.m in Sources */,
 				E8201F5222EF1B7D0098B7DB /* FCRNFP16.mlmodel in Sources */,
 				E8201F9622EF1C840098B7DB /* main.m in Sources */,
 				E8201F9422EF1C840098B7DB /* AppDelegate.m in Sources */,
@@ -238,6 +245,7 @@
 			files = (
 				E8201F5322EF1B800098B7DB /* FCRN.mlmodel in Sources */,
 				E8201F9122EF1C840098B7DB /* ViewController.m in Sources */,
+				E8CB4B5022F1E21E00D924B2 /* ImageLayerView.m in Sources */,
 				E8A7368622ED7D6B00309FD0 /* ImagePlatform.m in Sources */,
 				E8201F9522EF1C840098B7DB /* main.m in Sources */,
 				E8201F9322EF1C840098B7DB /* AppDelegate.m in Sources */,

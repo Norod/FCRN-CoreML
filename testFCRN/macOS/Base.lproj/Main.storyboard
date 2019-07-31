@@ -710,7 +710,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="516" height="285"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="eUm-Lt-vqK">
+                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="eUm-Lt-vqK" customClass="ImageLayerView">
                                 <rect key="frame" x="17" y="76" width="240" height="192"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="eUm-Lt-vqK" secondAttribute="height" multiplier="39:31" id="ERL-rA-Key"/>
@@ -718,7 +718,7 @@
                                 </constraints>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageFrameStyle="photo" id="PlW-bn-0Wz"/>
                             </imageView>
-                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="YEg-Hn-NDq">
+                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="YEg-Hn-NDq" customClass="ImageLayerView">
                                 <rect key="frame" x="259" y="76" width="240" height="192"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="photo" id="wph-Jb-Elv"/>
                             </imageView>
@@ -728,7 +728,7 @@
                                     <constraint firstAttribute="height" constant="19" id="3gT-Z8-psk"/>
                                 </constraints>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="Please open an image" id="nQ1-yq-3DT">
-                                    <font key="font" metaFont="controlContent" size="11"/>
+                                    <font key="font" metaFont="menu" size="11"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -740,7 +740,7 @@
                                 </constraints>
                                 <buttonCell key="cell" type="roundTextured" title="Open…" bezelStyle="texturedRounded" alignment="center" controlSize="small" state="on" borderStyle="border" inset="2" id="ep8-pQ-nvq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="controlContent" size="11"/>
+                                    <font key="font" metaFont="menu" size="11"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="openImageAction:" target="XfG-lQ-9wD" id="Lc9-dT-Or5"/>
@@ -754,10 +754,24 @@
                                 </constraints>
                                 <buttonCell key="cell" type="roundTextured" title="Save…" bezelStyle="texturedRounded" alignment="center" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="yZZ-od-aQx">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="controlContent" size="11"/>
+                                    <font key="font" metaFont="menu" size="11"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="saveImageAction:" target="XfG-lQ-9wD" id="L9t-aT-PwT"/>
+                                    <action selector="saveImageAction:" target="XfG-lQ-9wD" id="VrN-Jk-yUN"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WK5-7S-do0">
+                                <rect key="frame" x="184" y="25" width="70" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="I9K-fs-K4B"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="70" id="WYS-2t-yV4"/>
+                                </constraints>
+                                <buttonCell key="cell" type="roundTextured" title="Save…" bezelStyle="texturedRounded" alignment="center" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="bp7-UF-hqH">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu" size="11"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="saveImageAction:" target="XfG-lQ-9wD" id="cfs-du-8BP"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -782,9 +796,10 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="depthImageView" destination="YEg-Hn-NDq" id="ZjJ-N1-d5m"/>
-                        <outlet property="imageView" destination="eUm-Lt-vqK" id="a4O-ap-1pX"/>
-                        <outlet property="saveButton" destination="mlT-41-vHE" id="bjU-8b-cqE"/>
+                        <outlet property="aspectFillImageSaveButton" destination="WK5-7S-do0" id="bhr-lz-vTA"/>
+                        <outlet property="depthImageSaveButton" destination="mlT-41-vHE" id="Vyf-Bi-6AH"/>
+                        <outlet property="depthImageView" destination="YEg-Hn-NDq" id="8yA-Vr-m8V"/>
+                        <outlet property="imageView" destination="eUm-Lt-vqK" id="x8w-Vc-WtQ"/>
                         <outlet property="textView" destination="0WR-tN-hFX" id="I18-Md-CD9"/>
                     </connections>
                 </viewController>

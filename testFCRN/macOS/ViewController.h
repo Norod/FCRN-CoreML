@@ -9,13 +9,16 @@
 #import <Cocoa/Cocoa.h>
 #import <AppKit/AppKit.h>
 
+#import "ImageLayerView.h"
+
 @interface ViewController : NSViewController
 
-@property (nonatomic, weak) IBOutlet NSImageView *imageView;        // the image to display
-@property (nonatomic, weak) IBOutlet NSImageView *depthImageView;    // the predicted depth map to display
-@property (nonatomic, weak) IBOutlet NSTextField *textView;         // the image file name to display
+@property (nonatomic, weak) IBOutlet ImageLayerView *imageView;        // the image to display
+@property (nonatomic, weak) IBOutlet ImageLayerView *depthImageView;   // the predicted depth map to display
+@property (nonatomic, weak) IBOutlet NSTextField    *textView;         // the image file name to display
 
-@property (nonatomic, weak) IBOutlet NSButton    *saveButton;
+@property (nonatomic, weak) IBOutlet NSButton    *depthImageSaveButton;
+@property (nonatomic, weak) IBOutlet NSButton    *aspectFillImageSaveButton;
 
 
 @end

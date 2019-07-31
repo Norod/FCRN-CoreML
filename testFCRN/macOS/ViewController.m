@@ -38,9 +38,9 @@
     [super viewDidLoad];
     
     self.imagePlatform = [[ImagePlatform alloc] init];
-     NSError *error = nil;
-     self.fcrn = [[ML_MODEL_CLASS alloc] init];
-     self.model = [VNCoreMLModel modelForMLModel:self.fcrn.model error:&error];
+    NSError *error = nil;
+    self.fcrn = [[ML_MODEL_CLASS alloc] init];
+    self.model = [VNCoreMLModel modelForMLModel:self.fcrn.model error:&error];
     
     // Do any additional setup after loading the view.
 }
@@ -52,6 +52,7 @@
     // Update the view, if already loaded.
 }
 
+
 // -------------------------------------------------------------------------------
 //    configureImage:imagePathStr
 // -------------------------------------------------------------------------------
@@ -59,10 +60,9 @@
 {
     // load the image from the given path string and set is to the NSImageView
     NSImage* image = [[NSImage alloc] initWithContentsOfFile:imagePathStr];
+    [self.imageView setContentsGravity:kCAGravityResizeAspectFill];
     [self.imageView setImage:image];
-    self.imageView.imageScaling = NSImageScaleProportionallyUpOrDown;
-//    self.imageView.layer.contentsGravity = kCAGravityResizeAspectFill;
-//    [self.imageView.layer setNeedsLayout];
+    [self.aspectFillImageSaveButton setEnabled:YES];
     [self.textView setStringValue:[imagePathStr lastPathComponent]];    // display the file name
     return image;
 }
@@ -110,7 +110,11 @@
     NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"png", @"tiff", nil];
     [savePanel setAllowedFileTypes:fileTypes];
     [savePanel setAllowsOtherFileTypes:NO];
-    [savePanel setMessage:@"Save depth image file:"];
+    if (sender == self.depthImageSaveButton) {
+        [savePanel setMessage:@"Save depth image file:"];
+    } else {
+        [savePanel setMessage:@"Save aspect fill image file:"];
+    }
     [savePanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Pictures/"]];
     [savePanel setCanCreateDirectories:YES];
     [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
@@ -119,13 +123,21 @@
             {
                 NSString* depthImagePathStr = [[savePanel URL] path];
                 
-                NSData* jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
-                BOOL didWrite = [jpegData writeToFile:depthImagePathStr atomically:YES];
-                if (didWrite) {
-                    NSLog(@"Wrote to \"%@\"", depthImagePathStr);
-                } else {
-                    NSLog(@"Failed writing to \"%@\"", depthImagePathStr);
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSData* jpegData = nil;
+                    if (sender == self.depthImageSaveButton) {
+                        jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
+                    } else {
+                        NSImage *aspectFillImage = [self.imageView imageFromLayer];
+                        jpegData = [aspectFillImage imageJPEGRepresentationWithCompressionFactor:0.80f];
+                    }
+                    BOOL didWrite = [jpegData writeToFile:depthImagePathStr atomically:YES];
+                    if (didWrite) {
+                        NSLog(@"Wrote to \"%@\"", depthImagePathStr);
+                    } else {
+                        NSLog(@"Failed writing to \"%@\"", depthImagePathStr);
+                    }
+                });
             }
         }
     }];
@@ -133,7 +145,7 @@
 
 - (void)predictDepthMapFromImage:(NSImage *)image {
     NSError *error = nil;
-        
+    
     VNRequestCompletionHandler completionHandler =  ^(VNRequest *request, NSError * _Nullable error) {
         NSArray *results = request.results;
         NSLog(@"results = \"%@\"", results);
@@ -157,9 +169,12 @@
                                                                                     sizeX:sizeX
                                                                                     sizeY:sizeY];
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
                         [self.depthImageView setImage:depthImage32];
-                        self.depthImageView.layer.contentsGravity = kCAGravityResizeAspect;
-                        [self.saveButton setEnabled:YES];
+                        [self.depthImageSaveButton setEnabled:YES];                        
+//                        NSImage *aspectFillImage = [self.imageView imageFromLayer];
+//                        NSLog(@"Depth image: \"%@\"", depthImage32);
+//                        NSLog(@"Aspect fill image: \"%@\"", aspectFillImage);
                     });
                 }
             }
