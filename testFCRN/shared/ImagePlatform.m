@@ -277,5 +277,80 @@
     return depthImage32;
 }
 
+#pragma mark - Utility - Crop
+
+- (CGRect)cropRectFromImageSize:(CGSize)imageSize
+         withSizeForAspectRatio:(CGSize)sizeForaspectRatio {
+
+    CGRect cropRect = CGRectZero;
+    CGFloat inWidth = imageSize.width;
+    CGFloat inHeight = imageSize.height;
+    
+    CGFloat aspectWidth = sizeForaspectRatio.width;
+    CGFloat aspectHeight = sizeForaspectRatio.height;
+    
+    CGFloat rx = inWidth/aspectWidth;           //E.G. 320/312 = 1.0256410256   |   704/312 = 2.2564102564
+    CGFloat ry = inHeight/aspectHeight;         //E.G. 240/312 = 0.7692307692   |   576/312 = 1.8461538462
+    CGFloat dx = 0.0f;
+    CGFloat dy = 0.0f;
+    
+    if(ry<rx) { //E.G. (320 - 240*312/312)/2 = 40   |   (704 - 576*312/312)/2 = 64
+        dx = (inWidth - inHeight*aspectWidth/aspectHeight) / 2.0f;
+        CGFloat newWidth  = (inWidth - (dx * 2.0f));
+        dy = 0.0f;
+        cropRect = CGRectMake(dx, dy, newWidth, inHeight);
+    } else {
+        dx = 0.0f;
+        dy = (inHeight - inWidth*aspectHeight/aspectWidth) / 2.0f;
+        CGFloat newHeight  = (inHeight - (dy * 2.0f));
+        cropRect = CGRectMake(dx, dy, inWidth, newHeight);
+    }
+    
+    return cropRect;
+}
+
+- (IMAGE_TYPE*)cropImage:(IMAGE_TYPE*)image withCropRect:(CGRect)cropRect {
+    IMAGE_TYPE *croppedImage = NULL;
+    
+    CGImageRef inputImageRef = [image asCGImageRef];
+    size_t bitsPerComponent = CGImageGetBitsPerComponent(inputImageRef);
+    size_t bitsPerPixel = CGImageGetBitsPerPixel(inputImageRef);
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(inputImageRef);
+    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(inputImageRef);
+     
+    size_t bytesPerRow = (bitsPerPixel / 8) * (size_t)(cropRect.size.width);
+    
+    CGContextRef bitmapContext = CGBitmapContextCreate(NULL,
+                                                       cropRect.size.width,
+                                                       cropRect.size.height,
+                                                       bitsPerComponent,
+                                                       bytesPerRow,
+                                                       colorSpace,
+                                                       bitmapInfo);
+    
+//    NSAffineTransform *idCTM = [NSAffineTransform transform];
+//    CGImageRef croppedInputImageRef = [image CGImageForProposedRect:&cropRect context:NULL hints:@{NSImageHintCTM:idCTM}];
+//
+//    CGContextDrawImage(bitmapContext, cropRect, croppedInputImageRef);
+    
+    CGRect targetRect = CGRectMake(-cropRect.origin.x, -cropRect.origin.y,  cropRect.size.width+cropRect.origin.x, cropRect.size.height+cropRect.origin.y);
+    CGContextDrawImage(bitmapContext, targetRect, inputImageRef);
+    
+    CGImageRef croppedImageRef = CGBitmapContextCreateImage(bitmapContext);
+    
+    #ifdef MACOS_TARGET
+            size_t imageWidth  = CGImageGetWidth(croppedImageRef);
+            size_t imageHeight = CGImageGetHeight(croppedImageRef);
+            NSSize imageSize = NSMakeSize((CGFloat)imageWidth, (CGFloat)imageHeight);
+                        
+            croppedImage = [[IMAGE_TYPE alloc] initWithCGImage:croppedImageRef size:imageSize] ;
+    #else
+            croppedImage = [IMAGE_TYPE imageWithCGImage:croppedImageRef scale:1.0 orientation:UIImageOrientationUp];
+    #endif
+    
+    CGContextRelease(bitmapContext);
+    
+    return croppedImage;
+}
 
 @end

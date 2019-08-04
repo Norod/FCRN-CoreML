@@ -32,7 +32,7 @@
 - (void)setImage:(NSImage *)image {
     if (_image != image) {
         _image = image;
-        self.layer.contents = CFBridgingRelease([_image asCGImageRef]);
+        self.layer.contents = (__bridge id _Nullable)([_image asCGImageRef]);
         self.wantsLayer = (image != nil)?(YES):(NO);
         [self.layer setNeedsDisplay];
     }

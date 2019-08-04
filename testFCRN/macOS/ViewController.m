@@ -30,6 +30,10 @@
 
 @property (nonatomic, strong) ImagePlatform* imagePlatform;
 
+@property (nonatomic, strong) NSImage *inputImage;
+@property (nonatomic, strong) NSImage *depthImage;
+@property (nonatomic, strong) NSImage *croppedInputImage;
+
 @end
 
 @implementation ViewController
@@ -88,7 +92,10 @@
             {
                 NSString* imagePathStr = [[openPanel URL] path];
                 NSImage *image = [self configureImage:imagePathStr];
-                [self predictDepthMapFromImage:image];
+                self.inputImage = image;
+                dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+                    [self predictDepthMapFromInputImage];
+                });
             }
         }
     }];
@@ -128,8 +135,9 @@
                     if (sender == self.depthImageSaveButton) {
                         jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
                     } else {
-                        NSImage *aspectFillImage = [self.imageView imageFromLayer];
-                        jpegData = [aspectFillImage imageJPEGRepresentationWithCompressionFactor:0.80f];
+                        //NSImage *aspectFillImage = [self.imageView imageFromLayer];
+                        //jpegData = [aspectFillImage imageJPEGRepresentationWithCompressionFactor:0.80f];
+                        jpegData = [self.croppedInputImage imageJPEGRepresentationWithCompressionFactor:0.80f];
                     }
                     BOOL didWrite = [jpegData writeToFile:depthImagePathStr atomically:YES];
                     if (didWrite) {
@@ -143,8 +151,10 @@
     }];
 }
 
-- (void)predictDepthMapFromImage:(NSImage *)image {
+- (void)predictDepthMapFromInputImage {
     NSError *error = nil;
+    
+    NSImage *image = self.inputImage;
     
     VNRequestCompletionHandler completionHandler =  ^(VNRequest *request, NSError * _Nullable error) {
         NSArray *results = request.results;
@@ -168,14 +178,8 @@
                                                                          pixelSizeInBytes:pixelSizeInBytes
                                                                                     sizeX:sizeX
                                                                                     sizeY:sizeY];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
-                        [self.depthImageView setImage:depthImage32];
-                        [self.depthImageSaveButton setEnabled:YES];                        
-//                        NSImage *aspectFillImage = [self.imageView imageFromLayer];
-//                        NSLog(@"Depth image: \"%@\"", depthImage32);
-//                        NSLog(@"Aspect fill image: \"%@\"", aspectFillImage);
-                    });
+                    self.depthImage = depthImage32;
+                    [self depthImageIsReady];
                 }
             }
         }
@@ -186,6 +190,22 @@
                                                           options:@{VNImageOptionCIContext : self.imagePlatform.imagePlatformCoreContext}];
     //[self.handler performRequests:self.request];
     [self.handler performRequests:@[self.request] error:&error];
+}
+
+- (void)depthImageIsReady {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
+        [self.depthImageView setImage:self.depthImage];
+        [self.depthImageSaveButton setEnabled:YES];
+        
+        CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
+                                  withSizeForAspectRatio:self.depthImage.size];
+        
+        self.croppedInputImage = [self.imagePlatform cropImage:self.inputImage withCropRect:inputImageCropRect];
+        
+        [self.imageView setContentsGravity:kCAGravityResizeAspect];
+        [self.imageView setImage:self.croppedInputImage];
+    });
 }
 
 @end

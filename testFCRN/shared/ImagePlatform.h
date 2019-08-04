@@ -64,6 +64,11 @@ NS_ASSUME_NONNULL_BEGIN
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY;
 
+- (CGRect)cropRectFromImageSize:(CGSize)imageSize
+         withSizeForAspectRatio:(CGSize)sizeForaspectRatio;
+
+- (IMAGE_TYPE*)cropImage:(IMAGE_TYPE*)image withCropRect:(CGRect)cropRect;
+
 @end
 
 NS_ASSUME_NONNULL_END
