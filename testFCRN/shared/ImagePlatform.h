@@ -64,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY;
 
+//- (IMAGE_TYPE*)addDepthMap:(IMAGE_TYPE*)depthMapImage toExistingImage:(IMAGE_TYPE*)existingImage;
+
 - (CGRect)cropRectFromImageSize:(CGSize)imageSize
          withSizeForAspectRatio:(CGSize)sizeForaspectRatio;
 

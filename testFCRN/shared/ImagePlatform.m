@@ -10,6 +10,7 @@
 
 @import CoreImage;
 @import Accelerate;
+@import AVFoundation;
 
 @implementation IMAGE_TYPE (ImagePlatform)
 
@@ -276,6 +277,48 @@
     
     return depthImage32;
 }
+
+- (nullable AVDepthData *)depthDataFromImageData:(nonnull NSData *)imageData {
+    AVDepthData *depthData = nil;
+    
+    CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
+    if (imageSource) {
+        NSDictionary *auxDataDictionary = (__bridge NSDictionary *)CGImageSourceCopyAuxiliaryDataInfoAtIndex(imageSource, 0, kCGImageAuxiliaryDataTypeDisparity);
+        if (auxDataDictionary) {
+            depthData = [AVDepthData depthDataFromDictionaryRepresentation:auxDataDictionary error:NULL];
+        }
+        
+        CFRelease(imageSource);
+    }
+
+    return depthData;
+}
+
+//- (IMAGE_TYPE*)addDepthMap:(IMAGE_TYPE*)depthMapImage toExistingImage:(IMAGE_TYPE*)existingImage {
+//    IMAGE_TYPE *combinedImage = NULL;
+//    
+//    NSData *depthMapImageData = [depthMapImage imageJPEGRepresentationWithCompressionFactor:1.0f];
+//    //AVDepthData *depthData = [self depthDataFromImageData:depthMapImageData];
+//    NSDictionary *auxDict = @{(NSString*)kCGImageAuxiliaryDataInfoData:depthMapImageData,                           (NSString*)kCGImagePropertyAuxiliaryDataType:(NSString*)kCGImageAuxiliaryDataTypeDisparity,
+//                              (NSString*)kCGImageAuxiliaryDataInfoMetadata:@{},
+//                              (NSString*)kCGImageAuxiliaryDataInfoDataDescription:@{},
+//                              (NSString*)kCGImagePropertyExifAuxDictionary:@{(NSString*)kCGImagePropertyOrientation:@(kCGImagePropertyOrientationUp)},
+//                              (NSString*)kCGImagePropertyOrientation:@(kCGImagePropertyOrientationUp)
+//    };
+//    
+//    
+//    NSMutableData *imageData = [NSMutableData data];
+//    CGImageDestinationRef imageDestination =  CGImageDestinationCreateWithData((CFMutableDataRef)imageData, kUTTypeJPEG, 1, NULL);
+//    CGImageRef existingImageRef = [existingImage asCGImageRef];
+//    CGImageDestinationAddImage(imageDestination, existingImageRef, NULL);
+//    CGImageDestinationAddAuxiliaryDataInfo(imageDestination, kCGImageAuxiliaryDataTypeDisparity, (CFDictionaryRef)auxDict);
+//
+//    if (CGImageDestinationFinalize(imageDestination)) {
+//        combinedImage = [[IMAGE_TYPE alloc] initWithData:imageData];
+//    }
+//    
+//    return combinedImage;
+//}
 
 #pragma mark - Utility - Crop
 

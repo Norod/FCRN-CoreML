@@ -134,9 +134,7 @@
                     NSData* jpegData = nil;
                     if (sender == self.depthImageSaveButton) {
                         jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
-                    } else {
-                        //NSImage *aspectFillImage = [self.imageView imageFromLayer];
-                        //jpegData = [aspectFillImage imageJPEGRepresentationWithCompressionFactor:0.80f];
+                    } else {                        
                         jpegData = [self.croppedInputImage imageJPEGRepresentationWithCompressionFactor:0.80f];
                     }
                     BOOL didWrite = [jpegData writeToFile:depthImagePathStr atomically:YES];
@@ -201,7 +199,8 @@
         CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
                                   withSizeForAspectRatio:self.depthImage.size];
         
-        self.croppedInputImage = [self.imagePlatform cropImage:self.inputImage withCropRect:inputImageCropRect];
+        NSImage *croppedImage  = [self.imagePlatform cropImage:self.inputImage withCropRect:inputImageCropRect];
+        self.croppedInputImage = croppedImage;
         
         [self.imageView setContentsGravity:kCAGravityResizeAspect];
         [self.imageView setImage:self.croppedInputImage];
