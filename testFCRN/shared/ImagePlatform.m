@@ -313,42 +313,25 @@
     IMAGE_TYPE *croppedImage = NULL;
     
     CGImageRef inputImageRef = [image asCGImageRef];
-    size_t bitsPerComponent = CGImageGetBitsPerComponent(inputImageRef);
-    size_t bitsPerPixel = CGImageGetBitsPerPixel(inputImageRef);
-    CGColorSpaceRef colorSpace = CGImageGetColorSpace(inputImageRef);
-    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(inputImageRef);
-     
-    size_t bytesPerRow = (bitsPerPixel / 8) * (size_t)(cropRect.size.width);
-    
-    CGContextRef bitmapContext = CGBitmapContextCreate(NULL,
-                                                       cropRect.size.width,
-                                                       cropRect.size.height,
-                                                       bitsPerComponent,
-                                                       bytesPerRow,
-                                                       colorSpace,
-                                                       bitmapInfo);
-    
-//    NSAffineTransform *idCTM = [NSAffineTransform transform];
-//    CGImageRef croppedInputImageRef = [image CGImageForProposedRect:&cropRect context:NULL hints:@{NSImageHintCTM:idCTM}];
-//
-//    CGContextDrawImage(bitmapContext, cropRect, croppedInputImageRef);
-    
-    CGRect targetRect = CGRectMake(-cropRect.origin.x, -cropRect.origin.y,  cropRect.size.width+cropRect.origin.x, cropRect.size.height+cropRect.origin.y);
-    CGContextDrawImage(bitmapContext, targetRect, inputImageRef);
-    
-    CGImageRef croppedImageRef = CGBitmapContextCreateImage(bitmapContext);
-    
-    #ifdef MACOS_TARGET
-            size_t imageWidth  = CGImageGetWidth(croppedImageRef);
-            size_t imageHeight = CGImageGetHeight(croppedImageRef);
-            NSSize imageSize = NSMakeSize((CGFloat)imageWidth, (CGFloat)imageHeight);
-                        
-            croppedImage = [[IMAGE_TYPE alloc] initWithCGImage:croppedImageRef size:imageSize] ;
-    #else
-            croppedImage = [IMAGE_TYPE imageWithCGImage:croppedImageRef scale:1.0 orientation:UIImageOrientationUp];
-    #endif
-    
-    CGContextRelease(bitmapContext);
+    CIImage *ciInputImage = [CIImage imageWithCGImage:inputImageRef];
+    CGImageRef imageRef = [self.imagePlatformCoreContext
+                          createCGImage:ciInputImage
+                          fromRect:cropRect];
+       
+       if (imageRef) {
+   #ifdef MACOS_TARGET
+           size_t imageWidth  = CGImageGetWidth(imageRef);
+           size_t imageHeight = CGImageGetHeight(imageRef);
+           NSSize imageSize = NSMakeSize((CGFloat)imageWidth, (CGFloat)imageHeight);
+           
+           
+           croppedImage = [[IMAGE_TYPE alloc] initWithCGImage:imageRef size:imageSize] ;
+   #else
+           croppedImage = [IMAGE_TYPE imageWithCGImage:imageRef scale:1.0 orientation:imageOrientation];
+   #endif
+           
+           CGImageRelease(imageRef);
+       }
     
     return croppedImage;
 }
