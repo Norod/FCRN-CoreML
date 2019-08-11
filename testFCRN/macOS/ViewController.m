@@ -31,8 +31,12 @@
 @property (nonatomic, strong) ImagePlatform* imagePlatform;
 
 @property (nonatomic, strong) NSImage *inputImage;
-@property (nonatomic, strong) NSImage *depthImage;
 @property (nonatomic, strong) NSImage *croppedInputImage;
+
+@property (nonatomic, strong) NSImage *depthImage;
+@property (nonatomic, strong) NSImage *disparityImage;
+
+@property (nonatomic, strong) NSImage *combinedImage;
 
 @end
 
@@ -108,7 +112,7 @@
 // -------------------------------------------------------------------------------
 - (IBAction)saveImageAction:(id)sender
 {
-    NSImage *depthImage = [self.depthImageView image];
+    NSImage *depthImage = self.depthImage;
     if (depthImage == nil) {
         return;
     }
@@ -134,7 +138,7 @@
                     NSData* jpegData = nil;
                     if (sender == self.depthImageSaveButton) {
                         jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
-                    } else {                        
+                    } else {
                         jpegData = [self.croppedInputImage imageJPEGRepresentationWithCompressionFactor:0.80f];
                     }
                     BOOL didWrite = [jpegData writeToFile:depthImagePathStr atomically:YES];
@@ -171,13 +175,39 @@
                     int sizeY = [multiArrayValue.shape[1] intValue];
                     int sizeX = [multiArrayValue.shape[2] intValue];
                     
+                    NSImage * disparityImage = nil;
+                    
+                    disparityImage = [self.imagePlatform createDisperityDepthImageFromResultData:pData
+                                                                                pixelSizeInBytes:pixelSizeInBytes
+                                                                                           sizeX:sizeX
+                                                                                           sizeY:sizeY];
+                    
+                    self.disparityImage = disparityImage;
+                    
+                    
                     NSImage * depthImage32 = nil;
                     depthImage32 = [self.imagePlatform createBGRADepthImageFromResultData:pData
                                                                          pixelSizeInBytes:pixelSizeInBytes
                                                                                     sizeX:sizeX
                                                                                     sizeY:sizeY];
+                    
+                    
                     self.depthImage = depthImage32;
-                    [self depthImageIsReady];
+                    
+                    CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
+                                                                   withSizeForAspectRatio:self.depthImage.size];
+                    
+                    NSImage *croppedImage  = [self.imagePlatform cropImage:self.inputImage
+                                                              withCropRect:inputImageCropRect];
+                    self.croppedInputImage = croppedImage;
+                    
+                    NSImage *combinedImage = nil;
+                    combinedImage = [self.imagePlatform addDepthMap:self.disparityImage
+                                                    toExistingImage:self.croppedInputImage];
+                    
+                    self.combinedImage = combinedImage;
+                    
+                    [self didPrepareImages];
                 }
             }
         }
@@ -190,17 +220,11 @@
     [self.handler performRequests:@[self.request] error:&error];
 }
 
-- (void)depthImageIsReady {
+- (void)didPrepareImages {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
         [self.depthImageView setImage:self.depthImage];
         [self.depthImageSaveButton setEnabled:YES];
-        
-        CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
-                                  withSizeForAspectRatio:self.depthImage.size];
-        
-        NSImage *croppedImage  = [self.imagePlatform cropImage:self.inputImage withCropRect:inputImageCropRect];
-        self.croppedInputImage = croppedImage;
         
         [self.imageView setContentsGravity:kCAGravityResizeAspect];
         [self.imageView setImage:self.croppedInputImage];

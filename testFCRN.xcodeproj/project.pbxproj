@@ -21,6 +21,12 @@
 		E8201F9922EF1D570098B7DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8201F9722EF1D570098B7DB /* Assets.xcassets */; };
 		E8201FA922EF1DDD0098B7DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E8201FA522EF1DDD0098B7DB /* Main.storyboard */; };
 		E8201FAA22EF1DDD0098B7DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E8201FA522EF1DDD0098B7DB /* Main.storyboard */; };
+		E87F8F8B22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */; };
+		E87F8F8C22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */; };
+		E87F8F8D22FC735D00E48DB8 /* Matte.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8922FC735C00E48DB8 /* Matte.xmp */; };
+		E87F8F8E22FC735D00E48DB8 /* Matte.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8922FC735C00E48DB8 /* Matte.xmp */; };
+		E87F8F8F22FC735D00E48DB8 /* DepthLandscape.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */; };
+		E87F8F9022FC735D00E48DB8 /* DepthLandscape.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */; };
 		E896783222EF013D002D34D2 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
 		E8A7368622ED7D6B00309FD0 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
 		E8CB4B5022F1E21E00D924B2 /* ImageLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CB4B4F22F1E21E00D924B2 /* ImageLayerView.m */; };
@@ -40,6 +46,9 @@
 		E8201F9722EF1D570098B7DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E8201FA622EF1DDD0098B7DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E8201FAC22EF24410098B7DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthPortrait.xmp; sourceTree = "<group>"; };
+		E87F8F8922FC735C00E48DB8 /* Matte.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Matte.xmp; sourceTree = "<group>"; };
+		E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthLandscape.xmp; sourceTree = "<group>"; };
 		E896783D22EF013D002D34D2 /* testFCRN16.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testFCRN16.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A7365A22ED7BE400309FD0 /* testFCRN32.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testFCRN32.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A7368422ED7D6B00309FD0 /* ImagePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePlatform.h; sourceTree = "<group>"; };
@@ -80,6 +89,7 @@
 		E8201F4B22EF1B1D0098B7DB /* shared */ = {
 			isa = PBXGroup;
 			children = (
+				E87F8F8722FC735C00E48DB8 /* xmp */,
 				E8A7368422ED7D6B00309FD0 /* ImagePlatform.h */,
 				E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */,
 				E8A7368722ED7DB600309FD0 /* TargetPlatform.h */,
@@ -103,6 +113,16 @@
 				E8CB4B4F22F1E21E00D924B2 /* ImageLayerView.m */,
 			);
 			path = macOS;
+			sourceTree = "<group>";
+		};
+		E87F8F8722FC735C00E48DB8 /* xmp */ = {
+			isa = PBXGroup;
+			children = (
+				E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */,
+				E87F8F8922FC735C00E48DB8 /* Matte.xmp */,
+				E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */,
+			);
+			path = xmp;
 			sourceTree = "<group>";
 		};
 		E8A7365122ED7BE300309FD0 = {
@@ -208,8 +228,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8201F9022EF1C840098B7DB /* Info.plist in Resources */,
+				E87F8F8E22FC735D00E48DB8 /* Matte.xmp in Resources */,
 				E8201F9922EF1D570098B7DB /* Assets.xcassets in Resources */,
+				E87F8F8C22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */,
 				E8201FAA22EF1DDD0098B7DB /* Main.storyboard in Resources */,
+				E87F8F9022FC735D00E48DB8 /* DepthLandscape.xmp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,8 +241,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8201F8F22EF1C840098B7DB /* Info.plist in Resources */,
+				E87F8F8D22FC735D00E48DB8 /* Matte.xmp in Resources */,
 				E8201F9822EF1D570098B7DB /* Assets.xcassets in Resources */,
+				E87F8F8B22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */,
 				E8201FA922EF1DDD0098B7DB /* Main.storyboard in Resources */,
+				E87F8F8F22FC735D00E48DB8 /* DepthLandscape.xmp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

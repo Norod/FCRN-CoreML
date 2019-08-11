@@ -8,6 +8,9 @@
 
 #import "ImagePlatform.h"
 
+#define kDepthFormat kCVPixelFormatType_DisparityFloat32
+//#define kDepthFormat kCVPixelFormatType_DepthFloat32
+ 
 @import CoreImage;
 @import Accelerate;
 @import AVFoundation;
@@ -42,6 +45,8 @@
 
 @interface ImagePlatform () {
     CGColorSpaceRef _colorSpaceRGB;
+    float *_spBuff;
+    size_t _spBuffSize;
 }
 
 @property (nonatomic, strong) CIContext     *imagePlatformCoreContext;
@@ -56,6 +61,8 @@
 {
     self = [super init];
     if (self) {
+        _spBuff = NULL;
+        _spBuffSize = 0;
         [self setupCoreContext];
     }
     return self;
@@ -63,6 +70,11 @@
 
 - (void)dealloc
 {
+    if (_spBuff) {
+        free(_spBuff);
+        _spBuff = NULL;
+    }
+    _spBuffSize = 0;
     [self teardownCoreContext];
 }
 
@@ -244,6 +256,47 @@
     return grayImageBuffer;
 }
 
+- (IMAGE_TYPE*)createDisperityDepthImageFromResultData:(uint8_t *)pData
+                                      pixelSizeInBytes:(uint8_t)pixelSizeInBytes
+                                                 sizeX:(int)sizeX
+                                                 sizeY:(int)sizeY {
+    
+    NSAssert((pixelSizeInBytes == 8), @"Expected double sized elements");
+    
+    CVPixelBufferRef grayImageBuffer = NULL;
+    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
+    [self setupPixelBuffer:&grayImageBuffer
+           pixelFormatType:kDepthFormat
+                  withRect:pixelBufferRect];
+    
+    size_t sizeWeNeed = sizeX * sizeY * sizeof(float);
+    
+    if ((_spBuff) && (_spBuffSize != sizeWeNeed)) {
+        free(_spBuff);
+        _spBuff = NULL;
+        _spBuffSize = 0;
+    }
+    
+    if (_spBuff == NULL) {
+        _spBuff = malloc(sizeWeNeed);
+        _spBuffSize = sizeWeNeed;
+    }
+    
+    vDSP_vdpsp((const double *)pData,1, (float*)_spBuff, 1,  sizeY*sizeX);
+    
+    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
+    float *spBuff = (float *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+    memcpy(spBuff, _spBuff, _spBuffSize);
+    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+    
+    IMAGE_TYPE * depthImage32 = [self imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
+    
+    [self teardownPixelBuffer:&grayImageBuffer];
+    
+    return depthImage32;
+    
+}
+
 - (IMAGE_TYPE*)createBGRADepthImageFromResultData:(uint8_t *)pData
                                  pixelSizeInBytes:(uint8_t)pixelSizeInBytes
                                             sizeX:(int)sizeX
@@ -252,7 +305,8 @@
     NSAssert((pixelSizeInBytes == 8), @"Expected double sized elements");
     
     char *grayBuff = malloc(sizeY*sizeX*sizeof(char));
-    
+    //vDSP_vfix8D((const double *)pData, 1, grayBuff, 1,  sizeY*sizeX);
+
     double maxVD = 0.;
     double minVD = 0.;
     vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
@@ -278,47 +332,95 @@
     return depthImage32;
 }
 
-- (nullable AVDepthData *)depthDataFromImageData:(nonnull NSData *)imageData {
-    AVDepthData *depthData = nil;
+- (nullable NSDictionary *)auxiliaryDictWithImageData:(nonnull NSData *)imageData
+                                     infoMetadataDict:(NSDictionary *)infoMetadataDict
+                                              xmpPath:(NSString*)xmpPath {
     
-    CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
-    if (imageSource) {
-        NSDictionary *auxDataDictionary = (__bridge NSDictionary *)CGImageSourceCopyAuxiliaryDataInfoAtIndex(imageSource, 0, kCGImageAuxiliaryDataTypeDisparity);
-        if (auxDataDictionary) {
-            depthData = [AVDepthData depthDataFromDictionaryRepresentation:auxDataDictionary error:NULL];
-        }
-        
-        CFRelease(imageSource);
-    }
+    NSData* xmpData = [NSData dataWithContentsOfFile:xmpPath];
+    CFDataRef xmpDataRef = (__bridge CFDataRef)xmpData;
+    CGImageMetadataRef imgMetaData = CGImageMetadataCreateFromXMPData(xmpDataRef);
+    
+    
+    
+   // NSError *error = nil;
+    
+    NSDictionary *auxDict = @{(NSString*)kCGImageAuxiliaryDataInfoData : imageData,
+                              (NSString*)kCGImageAuxiliaryDataInfoMetadata : (id)CFBridgingRelease(imgMetaData),
+                              (NSString*)kCGImageAuxiliaryDataInfoDataDescription : infoMetadataDict};
+    
+    //[AVDepthData depthDataFromDictionaryRepresentation:auxDict error:&error];
 
-    return depthData;
+    return auxDict;
 }
 
-//- (IMAGE_TYPE*)addDepthMap:(IMAGE_TYPE*)depthMapImage toExistingImage:(IMAGE_TYPE*)existingImage {
-//    IMAGE_TYPE *combinedImage = NULL;
-//    
-//    NSData *depthMapImageData = [depthMapImage imageJPEGRepresentationWithCompressionFactor:1.0f];
-//    //AVDepthData *depthData = [self depthDataFromImageData:depthMapImageData];
-//    NSDictionary *auxDict = @{(NSString*)kCGImageAuxiliaryDataInfoData:depthMapImageData,                           (NSString*)kCGImagePropertyAuxiliaryDataType:(NSString*)kCGImageAuxiliaryDataTypeDisparity,
-//                              (NSString*)kCGImageAuxiliaryDataInfoMetadata:@{},
-//                              (NSString*)kCGImageAuxiliaryDataInfoDataDescription:@{},
-//                              (NSString*)kCGImagePropertyExifAuxDictionary:@{(NSString*)kCGImagePropertyOrientation:@(kCGImagePropertyOrientationUp)},
-//                              (NSString*)kCGImagePropertyOrientation:@(kCGImagePropertyOrientationUp)
-//    };
-//    
-//    
-//    NSMutableData *imageData = [NSMutableData data];
-//    CGImageDestinationRef imageDestination =  CGImageDestinationCreateWithData((CFMutableDataRef)imageData, kUTTypeJPEG, 1, NULL);
+- (IMAGE_TYPE*)addDepthMap:(IMAGE_TYPE*)depthMapImage toExistingImage:(IMAGE_TYPE*)existingImage {
+    IMAGE_TYPE *combinedImage = NULL;
+    
+    NSString *portraitStr = @"Portrait";
+    NSString *landscapeStr = @"Landscape";
+    NSString *orientationXMPFile = nil;
+    
+    if (existingImage.size.width > existingImage.size.height) {
+        orientationXMPFile = [NSString stringWithFormat:@"Depth%@", landscapeStr];
+    } else {
+        orientationXMPFile = [NSString stringWithFormat:@"Depth%@", portraitStr];
+    }
+    
+    NSString *xmpPath = [[NSBundle mainBundle] pathForResource:orientationXMPFile ofType:@"xmp"];
+    
+   
+    size_t bytesPerRow = 160 * sizeof(float);
+    size_t height = 128;
+    size_t width  = 160;
+    OSType pixelFormatType = kDepthFormat;
+    
+    NSDictionary *infoMetadataDict = @{@"BytesPerRow": @(bytesPerRow),
+                                       @"Height" : @(height),
+                                       @"PixelFormat" : @(pixelFormatType),
+                                       @"Width" : @(width)};
+    
+    NSData *depthMapImageData = [NSData dataWithBytesNoCopy:_spBuff length:_spBuffSize];
+    
+    NSDictionary *auxiliaryDict = [self auxiliaryDictWithImageData:depthMapImageData
+                                                  infoMetadataDict:infoMetadataDict
+                                                           xmpPath:xmpPath];
+    
+    NSError *error = nil;
+    AVDepthData *depthData = [AVDepthData depthDataFromDictionaryRepresentation:auxiliaryDict error:&error];
+    
+   
+        
+    // NSData *jpegData = [existingImage imageJPEGRepresentationWithCompressionFactor:0.8f];
+//    NSMutableData *imageData = [NSMutableData dataWithCapacity:jpegData.length];
+//    [imageData appendData:jpegData];
+    
+//    NSDictionary<CIImageOption,id> *imageOptions = @{kCIImageAuxiliaryDisparity:depthData};
 //    CGImageRef existingImageRef = [existingImage asCGImageRef];
-//    CGImageDestinationAddImage(imageDestination, existingImageRef, NULL);
-//    CGImageDestinationAddAuxiliaryDataInfo(imageDestination, kCGImageAuxiliaryDataTypeDisparity, (CFDictionaryRef)auxDict);
-//
-//    if (CGImageDestinationFinalize(imageDestination)) {
-//        combinedImage = [[IMAGE_TYPE alloc] initWithData:imageData];
-//    }
-//    
-//    return combinedImage;
-//}
+//    CIImage *ciImage = [CIImage imageWithCGImage:existingImageRef options:imageOptions];
+    
+    
+     NSMutableData *imageData = [NSMutableData data];
+
+    CGImageDestinationRef imageDestination =  CGImageDestinationCreateWithData((CFMutableDataRef)imageData, (CFStringRef)@"public.jpeg", 1, NULL);
+
+    
+//    CGImageRef image = (CGImageRef)([self.imagePlatformCoreContext createCGImage:ciImage fromRect:CGRectMake(0.0f, 0.0f, existingImage.size.width, existingImage.size.height)]);
+    CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], NULL);
+
+
+    // Use AVDepthData to get the auxiliary data dictionary.
+    NSString *auxDataType = nil;
+    NSDictionary *auxData = [depthData dictionaryRepresentationForAuxiliaryDataType:&auxDataType];
+
+    // Add auxiliary data to the image destination.
+    CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, (CFDictionaryRef)auxData);
+
+    if (CGImageDestinationFinalize(imageDestination)) {
+        combinedImage = [[IMAGE_TYPE alloc] initWithData:imageData];
+    }
+    
+    return combinedImage;
+}
 
 #pragma mark - Utility - Crop
 

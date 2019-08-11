@@ -59,12 +59,17 @@ NS_ASSUME_NONNULL_BEGIN
                 withRect:(CGRect)rect;
 - (void)teardownPixelBuffer:(CVPixelBufferRef _Nonnull *_Nonnull)pPixelBufferRef;
 
+- (IMAGE_TYPE*)createDisperityDepthImageFromResultData:(uint8_t *)pData
+                                      pixelSizeInBytes:(uint8_t)pixelSizeInBytes
+                                                 sizeX:(int)sizeX
+                                                 sizeY:(int)sizeY;
+
 - (IMAGE_TYPE*)createBGRADepthImageFromResultData:(uint8_t *)pData
                                  pixelSizeInBytes:(uint8_t)pixelSizeInBytes
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY;
 
-//- (IMAGE_TYPE*)addDepthMap:(IMAGE_TYPE*)depthMapImage toExistingImage:(IMAGE_TYPE*)existingImage;
+- (IMAGE_TYPE*)addDepthMap:(IMAGE_TYPE*)depthMapImage toExistingImage:(IMAGE_TYPE*)existingImage;
 
 - (CGRect)cropRectFromImageSize:(CGSize)imageSize
          withSizeForAspectRatio:(CGSize)sizeForaspectRatio;
