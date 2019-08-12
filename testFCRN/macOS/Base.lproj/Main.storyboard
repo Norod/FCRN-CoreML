@@ -760,8 +760,8 @@
                                     <action selector="saveImageAction:" target="XfG-lQ-9wD" id="VrN-Jk-yUN"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WK5-7S-do0">
-                                <rect key="frame" x="184" y="25" width="70" height="24"/>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WK5-7S-do0">
+                                <rect key="frame" x="184" y="25" width="70" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="I9K-fs-K4B"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="70" id="WYS-2t-yV4"/>
@@ -777,8 +777,10 @@
                         </subviews>
                         <constraints>
                             <constraint firstItem="mlT-41-vHE" firstAttribute="leading" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="348" id="4L4-DU-nhG"/>
+                            <constraint firstItem="WK5-7S-do0" firstAttribute="trailing" secondItem="eUm-Lt-vqK" secondAttribute="trailing" id="ArK-NF-oqw"/>
                             <constraint firstItem="mlT-41-vHE" firstAttribute="baseline" secondItem="X46-Eb-qkv" secondAttribute="firstBaseline" id="CvT-ng-hez"/>
                             <constraint firstItem="YEg-Hn-NDq" firstAttribute="width" secondItem="eUm-Lt-vqK" secondAttribute="width" id="E54-6z-fZ1"/>
+                            <constraint firstItem="WK5-7S-do0" firstAttribute="baseline" secondItem="mlT-41-vHE" secondAttribute="baseline" id="G2d-ST-fY2"/>
                             <constraint firstItem="X46-Eb-qkv" firstAttribute="top" secondItem="0WR-tN-hFX" secondAttribute="bottom" constant="8" id="MUo-oR-wTi"/>
                             <constraint firstAttribute="trailing" secondItem="YEg-Hn-NDq" secondAttribute="trailing" constant="20" id="OUs-d7-Rh9"/>
                             <constraint firstItem="0WR-tN-hFX" firstAttribute="top" secondItem="eUm-Lt-vqK" secondAttribute="bottom" constant="8" id="Ooz-Kq-zAz"/>
@@ -786,6 +788,7 @@
                             <constraint firstItem="YEg-Hn-NDq" firstAttribute="height" secondItem="eUm-Lt-vqK" secondAttribute="height" id="Vk9-lw-x41"/>
                             <constraint firstItem="eUm-Lt-vqK" firstAttribute="centerY" secondItem="YEg-Hn-NDq" secondAttribute="centerY" id="Yhz-K8-Hxk"/>
                             <constraint firstAttribute="trailing" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="438" id="b9c-kF-w80"/>
+                            <constraint firstItem="WK5-7S-do0" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="8" symbolic="YES" id="bJW-9n-fJg"/>
                             <constraint firstAttribute="bottom" secondItem="X46-Eb-qkv" secondAttribute="bottom" constant="20" id="cga-pD-pWH"/>
                             <constraint firstItem="mlT-41-vHE" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0WR-tN-hFX" secondAttribute="trailing" id="k1L-Dt-G2R"/>
                             <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="pZM-2j-8ba"/>

@@ -175,24 +175,13 @@
                     int sizeY = [multiArrayValue.shape[1] intValue];
                     int sizeX = [multiArrayValue.shape[2] intValue];
                     
-                    NSImage * disparityImage = nil;
+                    [self.imagePlatform prepareImagePlatformContextFromResultData:pData
+                                                                 pixelSizeInBytes:pixelSizeInBytes
+                                                                            sizeX:sizeX
+                                                                            sizeY:sizeY];
                     
-                    disparityImage = [self.imagePlatform createDisperityDepthImageFromResultData:pData
-                                                                                pixelSizeInBytes:pixelSizeInBytes
-                                                                                           sizeX:sizeX
-                                                                                           sizeY:sizeY];
-                    
-                    self.disparityImage = disparityImage;
-                    
-                    
-                    NSImage * depthImage32 = nil;
-                    depthImage32 = [self.imagePlatform createBGRADepthImageFromResultData:pData
-                                                                         pixelSizeInBytes:pixelSizeInBytes
-                                                                                    sizeX:sizeX
-                                                                                    sizeY:sizeY];
-                    
-                    
-                    self.depthImage = depthImage32;
+                    self.disparityImage = [self.imagePlatform createDisperityDepthImage];
+                    self.depthImage =  [self.imagePlatform createBGRADepthImage];
                     
                     CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
                                                                    withSizeForAspectRatio:self.depthImage.size];
@@ -201,11 +190,7 @@
                                                               withCropRect:inputImageCropRect];
                     self.croppedInputImage = croppedImage;
                     
-                    NSImage *combinedImage = nil;
-                    combinedImage = [self.imagePlatform addDepthMap:self.disparityImage
-                                                    toExistingImage:self.croppedInputImage];
-                    
-                    self.combinedImage = combinedImage;
+                    self.combinedImage =  [self.imagePlatform addDepthMapToExistingImage:self.croppedInputImage];
                     
                     [self didPrepareImages];
                 }

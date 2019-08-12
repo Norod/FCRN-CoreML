@@ -43,10 +43,21 @@
 
 @end
 
+typedef struct _sImagePlatformContext {
+    uint8_t *pData;
+    uint8_t pixelSizeInBytes;
+    int sizeX;
+    int sizeY;
+    
+    float   *spBuff;
+    size_t  spBuffSize;
+   
+    
+}sImagePlatformContext, *sImagePlatformContextPtr;
+
 @interface ImagePlatform () {
     CGColorSpaceRef _colorSpaceRGB;
-    float *_spBuff;
-    size_t _spBuffSize;
+    sImagePlatformContext _context;
 }
 
 @property (nonatomic, strong) CIContext     *imagePlatformCoreContext;
@@ -61,8 +72,12 @@
 {
     self = [super init];
     if (self) {
-        _spBuff = NULL;
-        _spBuffSize = 0;
+        _context.pData = NULL;
+        _context.pixelSizeInBytes = 0;
+        _context.sizeX = 0;
+        _context.sizeY = 0;
+        _context.spBuff = NULL;
+        _context.spBuffSize = 0;
         [self setupCoreContext];
     }
     return self;
@@ -70,12 +85,26 @@
 
 - (void)dealloc
 {
-    if (_spBuff) {
-        free(_spBuff);
-        _spBuff = NULL;
-    }
-    _spBuffSize = 0;
+    [self teardownInternalContext];
     [self teardownCoreContext];
+}
+
+- (void)teardownInternalContext {
+    if (_context.pData) {
+        free(_context.pData);
+        _context.pData = NULL;
+    }
+    
+    _context.pixelSizeInBytes = 0;
+    _context.sizeX = 0;
+    _context.sizeY = 0;
+    
+    if (_context.spBuff) {
+        free(_context.spBuff);
+        _context.spBuff = NULL;
+    }
+    
+    _context.spBuffSize = 0;
 }
 
 - (void)setupCoreContext {
@@ -235,6 +264,34 @@
 
 #pragma mark - Depth buffer proccesing
 
+- (BOOL)prepareImagePlatformContextFromResultData:(uint8_t *)pData
+                                 pixelSizeInBytes:(uint8_t)pixelSizeInBytes
+                                            sizeX:(int)sizeX
+                                            sizeY:(int)sizeY {
+           
+    if ((_context.sizeX != sizeX) || (_context.sizeY != sizeY) || (_context.pixelSizeInBytes != pixelSizeInBytes)) {
+        [self teardownInternalContext];
+    }
+    
+    if (_context.pData == NULL) {
+        _context.pData = malloc(sizeX * sizeY * pixelSizeInBytes);
+        _context.pixelSizeInBytes = pixelSizeInBytes;
+        _context.sizeX = sizeX;
+        _context.sizeY = sizeY;
+    }
+    
+    memcpy(_context.pData, pData, (sizeX * sizeY * pixelSizeInBytes));
+    
+    if (_context.spBuff == NULL) {
+        _context.spBuffSize = sizeX * sizeY * sizeof(float);
+        _context.spBuff = malloc(_context.spBuffSize);
+    }
+    
+    vDSP_vdpsp((const double *)pData,1, (float*)_context.spBuff, 1,  sizeY*sizeX);
+        
+    return YES;
+}
+
 - (CVPixelBufferRef)createPixelBufferFromGrayData:(char *)grayBuff
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY {
@@ -256,37 +313,19 @@
     return grayImageBuffer;
 }
 
-- (IMAGE_TYPE*)createDisperityDepthImageFromResultData:(uint8_t *)pData
-                                      pixelSizeInBytes:(uint8_t)pixelSizeInBytes
-                                                 sizeX:(int)sizeX
-                                                 sizeY:(int)sizeY {
+- (IMAGE_TYPE*)createDisperityDepthImage {
     
-    NSAssert((pixelSizeInBytes == 8), @"Expected double sized elements");
+    NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
     
     CVPixelBufferRef grayImageBuffer = NULL;
-    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
+    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)(_context.sizeX), (CGFloat)(_context.sizeY));
     [self setupPixelBuffer:&grayImageBuffer
            pixelFormatType:kDepthFormat
                   withRect:pixelBufferRect];
     
-    size_t sizeWeNeed = sizeX * sizeY * sizeof(float);
-    
-    if ((_spBuff) && (_spBuffSize != sizeWeNeed)) {
-        free(_spBuff);
-        _spBuff = NULL;
-        _spBuffSize = 0;
-    }
-    
-    if (_spBuff == NULL) {
-        _spBuff = malloc(sizeWeNeed);
-        _spBuffSize = sizeWeNeed;
-    }
-    
-    vDSP_vdpsp((const double *)pData,1, (float*)_spBuff, 1,  sizeY*sizeX);
-    
     CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
     float *spBuff = (float *)CVPixelBufferGetBaseAddress(grayImageBuffer);
-    memcpy(spBuff, _spBuff, _spBuffSize);
+    memcpy(spBuff, _context.spBuff, _context.spBuffSize);
     CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
     
     IMAGE_TYPE * depthImage32 = [self imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
@@ -297,31 +336,27 @@
     
 }
 
-- (IMAGE_TYPE*)createBGRADepthImageFromResultData:(uint8_t *)pData
-                                 pixelSizeInBytes:(uint8_t)pixelSizeInBytes
-                                            sizeX:(int)sizeX
-                                            sizeY:(int)sizeY {
+- (IMAGE_TYPE*)createBGRADepthImage {
     
-    NSAssert((pixelSizeInBytes == 8), @"Expected double sized elements");
+     NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
     
-    char *grayBuff = malloc(sizeY*sizeX*sizeof(char));
-    //vDSP_vfix8D((const double *)pData, 1, grayBuff, 1,  sizeY*sizeX);
+    char *grayBuff = malloc(_context.sizeY*_context.sizeX*sizeof(char));
 
     double maxVD = 0.;
     double minVD = 0.;
-    vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
-    vDSP_minvD((const double *)pData, 1, &minVD, sizeY*sizeX);
+    vDSP_maxvD((const double *)_context.pData, 1, &maxVD, _context.sizeY*_context.sizeX);
+    vDSP_minvD((const double *)_context.pData, 1, &minVD, _context.sizeY*_context.sizeX);
     const  double scalar = 255./maxVD;
-    double *doubleBuff1 = malloc(sizeY*sizeX*sizeof(double));
-    vDSP_vsmulD((const double *)pData, 1, &scalar, doubleBuff1, 1, sizeY*sizeX);
+    double *doubleBuff1 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
+    vDSP_vsmulD((const double *)_context.pData, 1, &scalar, doubleBuff1, 1, _context.sizeY*_context.sizeX);
     const double offset = -(scalar * (minVD / 2.));
-    double *doubleBuff2 = malloc(sizeY*sizeX*sizeof(double));
-    vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, sizeY*sizeX);
+    double *doubleBuff2 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
+    vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, _context.sizeY*_context.sizeX);
     free(doubleBuff1);
-    vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  sizeY*sizeX);
+    vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  _context.sizeY*_context.sizeX);
     free(doubleBuff2);
         
-    CVPixelBufferRef grayImageBuffer = [self createPixelBufferFromGrayData:grayBuff sizeX:sizeX sizeY:sizeY];
+    CVPixelBufferRef grayImageBuffer = [self createPixelBufferFromGrayData:grayBuff sizeX:_context.sizeX sizeY:_context.sizeY];
     
     free(grayBuff);
     
@@ -353,7 +388,7 @@
     return auxDict;
 }
 
-- (IMAGE_TYPE*)addDepthMap:(IMAGE_TYPE*)depthMapImage toExistingImage:(IMAGE_TYPE*)existingImage {
+- (IMAGE_TYPE*)addDepthMapToExistingImage:(IMAGE_TYPE*)existingImage {
     IMAGE_TYPE *combinedImage = NULL;
     
     NSString *portraitStr = @"Portrait";
@@ -369,9 +404,9 @@
     NSString *xmpPath = [[NSBundle mainBundle] pathForResource:orientationXMPFile ofType:@"xmp"];
     
    
-    size_t bytesPerRow = 160 * sizeof(float);
-    size_t height = 128;
-    size_t width  = 160;
+    size_t bytesPerRow = _context.sizeX * sizeof(float);
+    size_t height = _context.sizeY;
+    size_t width  = _context.sizeX;
     OSType pixelFormatType = kDepthFormat;
     
     NSDictionary *infoMetadataDict = @{@"BytesPerRow": @(bytesPerRow),
@@ -379,7 +414,7 @@
                                        @"PixelFormat" : @(pixelFormatType),
                                        @"Width" : @(width)};
     
-    NSData *depthMapImageData = [NSData dataWithBytesNoCopy:_spBuff length:_spBuffSize];
+    NSData *depthMapImageData = [NSData dataWithBytesNoCopy:_context.spBuff length:_context.spBuffSize];
     
     NSDictionary *auxiliaryDict = [self auxiliaryDictWithImageData:depthMapImageData
                                                   infoMetadataDict:infoMetadataDict
@@ -388,23 +423,10 @@
     NSError *error = nil;
     AVDepthData *depthData = [AVDepthData depthDataFromDictionaryRepresentation:auxiliaryDict error:&error];
     
-   
-        
-    // NSData *jpegData = [existingImage imageJPEGRepresentationWithCompressionFactor:0.8f];
-//    NSMutableData *imageData = [NSMutableData dataWithCapacity:jpegData.length];
-//    [imageData appendData:jpegData];
-    
-//    NSDictionary<CIImageOption,id> *imageOptions = @{kCIImageAuxiliaryDisparity:depthData};
-//    CGImageRef existingImageRef = [existingImage asCGImageRef];
-//    CIImage *ciImage = [CIImage imageWithCGImage:existingImageRef options:imageOptions];
-    
-    
      NSMutableData *imageData = [NSMutableData data];
 
     CGImageDestinationRef imageDestination =  CGImageDestinationCreateWithData((CFMutableDataRef)imageData, (CFStringRef)@"public.jpeg", 1, NULL);
 
-    
-//    CGImageRef image = (CGImageRef)([self.imagePlatformCoreContext createCGImage:ciImage fromRect:CGRectMake(0.0f, 0.0f, existingImage.size.width, existingImage.size.height)]);
     CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], NULL);
 
 
