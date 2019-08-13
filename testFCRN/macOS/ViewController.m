@@ -180,9 +180,8 @@
                                                                             sizeX:sizeX
                                                                             sizeY:sizeY];
                     
-                    self.disparityImage = [self.imagePlatform createDisperityDepthImage];
                     self.depthImage =  [self.imagePlatform createBGRADepthImage];
-                    
+                                                            
                     CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
                                                                    withSizeForAspectRatio:self.depthImage.size];
                     
@@ -191,7 +190,7 @@
                     self.croppedInputImage = croppedImage;
                     
                     self.combinedImage =  [self.imagePlatform addDepthMapToExistingImage:self.croppedInputImage];
-                    
+                                                            
                     [self didPrepareImages];
                 }
             }
@@ -209,6 +208,9 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
         [self.depthImageView setImage:self.depthImage];
+        
+        //self.disparityImage = [self.imagePlatform createDisperityDepthImage];
+        //[self.depthImageView setImage:self.disparityImage];
         [self.depthImageSaveButton setEnabled:YES];
         
         [self.imageView setContentsGravity:kCAGravityResizeAspect];

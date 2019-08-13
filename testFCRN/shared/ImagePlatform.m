@@ -51,6 +51,8 @@ typedef struct _sImagePlatformContext {
     
     float   *spBuff;
     size_t  spBuffSize;
+    float   maxV;
+    float   minV;
    
     
 }sImagePlatformContext, *sImagePlatformContextPtr;
@@ -78,6 +80,8 @@ typedef struct _sImagePlatformContext {
         _context.sizeY = 0;
         _context.spBuff = NULL;
         _context.spBuffSize = 0;
+        _context.maxV = 0.0f;
+        _context.minV = 0.0f;
         [self setupCoreContext];
     }
     return self;
@@ -287,7 +291,19 @@ typedef struct _sImagePlatformContext {
         _context.spBuff = malloc(_context.spBuffSize);
     }
     
-    vDSP_vdpsp((const double *)pData,1, (float*)_context.spBuff, 1,  sizeY*sizeX);
+   double maxVD = 0.;
+   vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
+   const  double scalar = 1.0/maxVD;
+   vDSP_vsmulD((const double *)pData, 1, &scalar, (double *)_context.pData, 1, sizeY*sizeX);
+   vDSP_vdpsp((const double *)_context.pData,1, (float*)_context.spBuff, 1,  sizeY*sizeX);
+    
+    float maxV = 0.;
+    float minV = 0.;
+    vDSP_maxv((float*)_context.spBuff, 1, &maxV, _context.sizeY*_context.sizeX);
+    vDSP_minv((float*)_context.spBuff, 1, &minV, _context.sizeY*_context.sizeX);
+    
+    _context.maxV = maxV;
+    _context.minV = minV;
         
     return YES;
 }
@@ -341,15 +357,10 @@ typedef struct _sImagePlatformContext {
      NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
     
     char *grayBuff = malloc(_context.sizeY*_context.sizeX*sizeof(char));
-
-    double maxVD = 0.;
-    double minVD = 0.;
-    vDSP_maxvD((const double *)_context.pData, 1, &maxVD, _context.sizeY*_context.sizeX);
-    vDSP_minvD((const double *)_context.pData, 1, &minVD, _context.sizeY*_context.sizeX);
-    const  double scalar = 255./maxVD;
+    const  double scalar = 255.;
     double *doubleBuff1 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
     vDSP_vsmulD((const double *)_context.pData, 1, &scalar, doubleBuff1, 1, _context.sizeY*_context.sizeX);
-    const double offset = -(scalar * (minVD / 2.));
+    const double offset = -(scalar * (_context.minV / 2.));
     double *doubleBuff2 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
     vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, _context.sizeY*_context.sizeX);
     free(doubleBuff1);
