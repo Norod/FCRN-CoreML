@@ -308,22 +308,71 @@ typedef struct _sImagePlatformContext {
     return YES;
 }
 
+- (CVPixelBufferRef)createFalseColorPixelBufferFromGrayData:(char *)grayBuff
+                                            sizeX:(int)sizeX
+                                            sizeY:(int)sizeY {
+    CVPixelBufferRef grayImageBuffer = NULL;
+    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
+    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
+                           pixelFormatType:kCVPixelFormatType_32BGRA
+                                  withRect:pixelBufferRect];
+    
+    if (grayImageBuffer == NULL || didSetup == NO) {
+        return NULL;
+    }
+    
+    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
+    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+    
+    char *colBuff1 = malloc(sizeX*sizeY);
+    char *colBuff2 = malloc(sizeX*sizeY);
+    char *pSource = grayBuff;
+    char *pDest1 = colBuff1;
+    char *pDest2 = colBuff2;
+    for (int y = 0; y < sizeY; ++y) {
+        for (int x= 0; x < sizeX; ++x) {
+            *pDest1 = (char)((*pSource) * 2);
+            *pDest2 = 0xFF - (char)((*pSource) * 2);
+            pSource++;
+            pDest1++;
+            pDest2++;
+        }
+    }
+    
+    const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
+    const vImage_Buffer colBuffV1 = {colBuff1, sizeY, sizeX, sizeX};
+    const vImage_Buffer colBuffV2 = {colBuff2, sizeY, sizeX, sizeX};
+    const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
+    
+    vImageConvert_Planar8ToBGRX8888(&colBuffV1, &grayBuffV, &colBuffV2, 0xFF, &rgbaBuffV, (vImage_Flags)0);
+    free(colBuff1);
+    free(colBuff2);
+    
+    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+    return grayImageBuffer;
+}
+
+
 - (CVPixelBufferRef)createPixelBufferFromGrayData:(char *)grayBuff
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY {
     CVPixelBufferRef grayImageBuffer = NULL;
     CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
-    [self setupPixelBuffer:&grayImageBuffer
-           pixelFormatType:kCVPixelFormatType_32BGRA
-                  withRect:pixelBufferRect];
+    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
+                           pixelFormatType:kCVPixelFormatType_32BGRA
+                                  withRect:pixelBufferRect];
+    
+    if (grayImageBuffer == NULL || didSetup == NO) {
+        return NULL;
+    }
     
     CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
     uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
-    
+
     const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
     const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
     
-    vImageConvert_Planar8ToBGRX8888(&grayBuffV, &grayBuffV, &grayBuffV, 0xFF, &rgbaBuffV, (vImage_Flags)0);
+    vImageConvert_Planar8ToBGRX8888(&grayBuffV, &grayBuffV, &grayBuffV, 0xFF, &rgbaBuffV, (vImage_Flags)0);  
     
     CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
     return grayImageBuffer;
@@ -335,9 +384,13 @@ typedef struct _sImagePlatformContext {
     
     CVPixelBufferRef grayImageBuffer = NULL;
     CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)(_context.sizeX), (CGFloat)(_context.sizeY));
-    [self setupPixelBuffer:&grayImageBuffer
-           pixelFormatType:kDepthFormat
-                  withRect:pixelBufferRect];
+     BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
+                            pixelFormatType:kDepthFormat
+                                   withRect:pixelBufferRect];
+    
+    if (grayImageBuffer == NULL || didSetup == NO) {
+        return NULL;
+    }
     
     CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
     float *spBuff = (float *)CVPixelBufferGetBaseAddress(grayImageBuffer);
@@ -370,6 +423,10 @@ typedef struct _sImagePlatformContext {
     CVPixelBufferRef grayImageBuffer = [self createPixelBufferFromGrayData:grayBuff sizeX:_context.sizeX sizeY:_context.sizeY];
     
     free(grayBuff);
+    
+    if (grayImageBuffer == NULL) {
+        return NULL;
+    }
     
     IMAGE_TYPE *depthImage32 = [self imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
     

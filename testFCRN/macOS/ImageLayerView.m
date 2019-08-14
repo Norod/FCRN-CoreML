@@ -67,6 +67,8 @@ CGContextRef createBitmapContext (int pixelsWide,
     if (bitmapData == NULL)
     {
         fprintf (stderr, "Memory not allocated!");
+        CGColorSpaceRelease(colorSpace);
+        colorSpace = NULL;
         return NULL;
     }
     context = CGBitmapContextCreate (bitmapData,// 4
@@ -79,9 +81,13 @@ CGContextRef createBitmapContext (int pixelsWide,
     if (context== NULL)
     {
         free (bitmapData);// 5
+        bitmapData = NULL;
+        CGColorSpaceRelease(colorSpace);
+        colorSpace = NULL;
         fprintf (stderr, "Context not created!");
         return NULL;
     }
+    
     CGColorSpaceRelease( colorSpace );// 6
  
     return context;// 7
@@ -103,6 +109,8 @@ CGContextRef createBitmapContext (int pixelsWide,
                 imageFromPresentationLayer = [[NSImage alloc] initWithCGImage:imageRef
                                                                          size:NSMakeSize((CGFloat)pixelsWide,
                                                                                          (CGFloat)pixelsHigh)];
+                CGImageRelease(imageRef);
+                imageRef = NULL;
             }
             CGContextRelease(bitmapContext);
         }

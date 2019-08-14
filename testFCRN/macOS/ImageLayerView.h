@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSImage *image;
 @property (nonatomic, assign) CALayerContentsGravity contentsGravity;
 
-- (NSImage *)imageFromLayer;
+- (NSImage * __nullable)imageFromLayer;
 
 @end
 

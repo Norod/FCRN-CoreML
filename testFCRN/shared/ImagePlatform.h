@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CIContext       *imagePlatformCoreContext;
 @property (nonatomic, readonly) CGColorSpaceRef colorSpaceRGB;
 
-- (IMAGE_TYPE*)imageFromCVPixelBufferRef:(CVPixelBufferRef)cvPixelBufferRef
+- (IMAGE_TYPE * __nullable)imageFromCVPixelBufferRef:(CVPixelBufferRef)cvPixelBufferRef
                         imageOrientation:(UIImageOrientation)imageOrientation;
 
 - (BOOL)setupPixelBuffer:(CVPixelBufferRef _Nonnull *_Nullable)pPixelBufferRef
@@ -63,14 +63,14 @@ NS_ASSUME_NONNULL_BEGIN
                                  pixelSizeInBytes:(uint8_t)pixelSizeInBytes
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY;
-- (IMAGE_TYPE*)createDisperityDepthImage;
-- (IMAGE_TYPE*)createBGRADepthImage;
+- (IMAGE_TYPE* __nullable)createDisperityDepthImage;
+- (IMAGE_TYPE* __nullable)createBGRADepthImage;
 - (IMAGE_TYPE*)addDepthMapToExistingImage:(IMAGE_TYPE*)existingImage;
 
 - (CGRect)cropRectFromImageSize:(CGSize)imageSize
          withSizeForAspectRatio:(CGSize)sizeForaspectRatio;
 
-- (IMAGE_TYPE*)cropImage:(IMAGE_TYPE*)image withCropRect:(CGRect)cropRect;
+- (IMAGE_TYPE* __nullable)cropImage:(IMAGE_TYPE*)image withCropRect:(CGRect)cropRect;
 
 @end
 

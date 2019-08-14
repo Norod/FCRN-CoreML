@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		E8201F5222EF1B7D0098B7DB /* FCRNFP16.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = E8201F4922EF1A250098B7DB /* FCRNFP16.mlmodel */; };
 		E8201F5322EF1B800098B7DB /* FCRN.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = E8201F4722EF1A1D0098B7DB /* FCRN.mlmodel */; };
-		E8201F8F22EF1C840098B7DB /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E8201F8522EF1C840098B7DB /* Info.plist */; };
-		E8201F9022EF1C840098B7DB /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E8201F8522EF1C840098B7DB /* Info.plist */; };
 		E8201F9122EF1C840098B7DB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8201F8722EF1C840098B7DB /* ViewController.m */; };
 		E8201F9222EF1C840098B7DB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8201F8722EF1C840098B7DB /* ViewController.m */; };
 		E8201F9322EF1C840098B7DB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E8201F8922EF1C840098B7DB /* AppDelegate.m */; };
@@ -227,7 +225,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8201F9022EF1C840098B7DB /* Info.plist in Resources */,
 				E87F8F8E22FC735D00E48DB8 /* Matte.xmp in Resources */,
 				E8201F9922EF1D570098B7DB /* Assets.xcassets in Resources */,
 				E87F8F8C22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */,
@@ -240,7 +237,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8201F8F22EF1C840098B7DB /* Info.plist in Resources */,
 				E87F8F8D22FC735D00E48DB8 /* Matte.xmp in Resources */,
 				E8201F9822EF1D570098B7DB /* Assets.xcassets in Resources */,
 				E87F8F8B22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */,
