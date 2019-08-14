@@ -8,8 +8,8 @@
 
 #import "ImagePlatform.h"
 
-#define kDepthFormat kCVPixelFormatType_DisparityFloat32
-//#define kDepthFormat kCVPixelFormatType_DepthFloat32
+//#define kDepthFormat kCVPixelFormatType_DisparityFloat32
+#define kDepthFormat kCVPixelFormatType_DepthFloat32
  
 @import CoreImage;
 @import Accelerate;

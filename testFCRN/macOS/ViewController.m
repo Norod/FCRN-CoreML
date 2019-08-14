@@ -68,6 +68,10 @@
 {
     // load the image from the given path string and set is to the NSImageView
     NSImage* image = [[NSImage alloc] initWithContentsOfFile:imagePathStr];
+    CGImageRef imageRef = [image asCGImageRef];
+    CGFloat width  = CGImageGetWidth(imageRef);
+    CGFloat height = CGImageGetHeight(imageRef);
+    [image setSize:CGSizeMake(width, height)];
     [self.imageView setContentsGravity:kCAGravityResizeAspectFill];
     [self.imageView setImage:image];
     [self.aspectFillImageSaveButton setEnabled:YES];
@@ -84,7 +88,7 @@
 {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     
-    NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"gif", @"png", @"tiff", nil];
+    NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"jpeg", @"gif", @"png", @"tiff", nil];
     [openPanel setAllowsMultipleSelection:NO];
     [openPanel setMessage:@"Choose an image file to display:"];
     [openPanel setAllowedFileTypes:fileTypes];
@@ -112,13 +116,13 @@
 // -------------------------------------------------------------------------------
 - (IBAction)saveImageAction:(id)sender
 {
-    NSImage *depthImage = self.depthImage;
+    NSImage *depthImage = self.disparityImage;
     if (depthImage == nil) {
         return;
     }
     
     NSSavePanel *savePanel = [NSSavePanel savePanel];
-    NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"png", @"tiff", nil];
+    NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"jpeg", @"png", @"tiff", nil];
     [savePanel setAllowedFileTypes:fileTypes];
     [savePanel setAllowsOtherFileTypes:NO];
     if (sender == self.depthImageSaveButton) {
@@ -180,10 +184,11 @@
                                                                             sizeX:sizeX
                                                                             sizeY:sizeY];
                     
-                    self.depthImage =  [self.imagePlatform createBGRADepthImage];
+                    self.disparityImage = [self.imagePlatform createDisperityDepthImage];
+                    //self.depthImage =  [self.imagePlatform createBGRADepthImage];
                                                             
                     CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
-                                                                   withSizeForAspectRatio:self.depthImage.size];
+                                                                   withSizeForAspectRatio:self.disparityImage.size];
                     
                     NSImage *croppedImage  = [self.imagePlatform cropImage:self.inputImage
                                                               withCropRect:inputImageCropRect];
@@ -207,10 +212,10 @@
 - (void)didPrepareImages {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
-        [self.depthImageView setImage:self.depthImage];
+        //[self.depthImageView setImage:self.depthImage];
         
-        //self.disparityImage = [self.imagePlatform createDisperityDepthImage];
-        //[self.depthImageView setImage:self.disparityImage];
+        
+        [self.depthImageView setImage:self.disparityImage];
         [self.depthImageSaveButton setEnabled:YES];
         
         [self.imageView setContentsGravity:kCAGravityResizeAspect];
