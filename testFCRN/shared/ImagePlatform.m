@@ -109,6 +109,9 @@ typedef struct _sImagePlatformContext {
     }
     
     _context.spBuffSize = 0;
+    
+    _context.maxV = 0.0f;
+    _context.minV = 0.0f;
 }
 
 - (void)setupCoreContext {
@@ -308,76 +311,6 @@ typedef struct _sImagePlatformContext {
     return YES;
 }
 
-- (CVPixelBufferRef)createFalseColorPixelBufferFromGrayData:(char *)grayBuff
-                                            sizeX:(int)sizeX
-                                            sizeY:(int)sizeY {
-    CVPixelBufferRef grayImageBuffer = NULL;
-    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
-    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
-                           pixelFormatType:kCVPixelFormatType_32BGRA
-                                  withRect:pixelBufferRect];
-    
-    if (grayImageBuffer == NULL || didSetup == NO) {
-        return NULL;
-    }
-    
-    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
-    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
-    
-    char *colBuff1 = malloc(sizeX*sizeY);
-    char *colBuff2 = malloc(sizeX*sizeY);
-    char *pSource = grayBuff;
-    char *pDest1 = colBuff1;
-    char *pDest2 = colBuff2;
-    for (int y = 0; y < sizeY; ++y) {
-        for (int x= 0; x < sizeX; ++x) {
-            *pDest1 = (char)((*pSource) * 2);
-            *pDest2 = 0xFF - (char)((*pSource) * 2);
-            pSource++;
-            pDest1++;
-            pDest2++;
-        }
-    }
-    
-    const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
-    const vImage_Buffer colBuffV1 = {colBuff1, sizeY, sizeX, sizeX};
-    const vImage_Buffer colBuffV2 = {colBuff2, sizeY, sizeX, sizeX};
-    const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
-    
-    vImageConvert_Planar8ToBGRX8888(&colBuffV1, &grayBuffV, &colBuffV2, 0xFF, &rgbaBuffV, (vImage_Flags)0);
-    free(colBuff1);
-    free(colBuff2);
-    
-    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
-    return grayImageBuffer;
-}
-
-
-- (CVPixelBufferRef)createPixelBufferFromGrayData:(char *)grayBuff
-                                            sizeX:(int)sizeX
-                                            sizeY:(int)sizeY {
-    CVPixelBufferRef grayImageBuffer = NULL;
-    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
-    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
-                           pixelFormatType:kCVPixelFormatType_32BGRA
-                                  withRect:pixelBufferRect];
-    
-    if (grayImageBuffer == NULL || didSetup == NO) {
-        return NULL;
-    }
-    
-    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
-    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
-
-    const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
-    const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
-    
-    vImageConvert_Planar8ToBGRX8888(&grayBuffV, &grayBuffV, &grayBuffV, 0xFF, &rgbaBuffV, (vImage_Flags)0);  
-    
-    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
-    return grayImageBuffer;
-}
-
 - (IMAGE_TYPE*)createDisperityDepthImage {
     
     NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
@@ -403,36 +336,6 @@ typedef struct _sImagePlatformContext {
     
     return depthImage32;
     
-}
-
-- (IMAGE_TYPE*)createBGRADepthImage {
-    
-     NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
-    
-    char *grayBuff = malloc(_context.sizeY*_context.sizeX*sizeof(char));
-    const  double scalar = 255.;
-    double *doubleBuff1 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
-    vDSP_vsmulD((const double *)_context.pData, 1, &scalar, doubleBuff1, 1, _context.sizeY*_context.sizeX);
-    const double offset = -(scalar * (_context.minV / 2.));
-    double *doubleBuff2 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
-    vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, _context.sizeY*_context.sizeX);
-    free(doubleBuff1);
-    vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  _context.sizeY*_context.sizeX);
-    free(doubleBuff2);
-        
-    CVPixelBufferRef grayImageBuffer = [self createPixelBufferFromGrayData:grayBuff sizeX:_context.sizeX sizeY:_context.sizeY];
-    
-    free(grayBuff);
-    
-    if (grayImageBuffer == NULL) {
-        return NULL;
-    }
-    
-    IMAGE_TYPE *depthImage32 = [self imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
-    
-    [self teardownPixelBuffer:&grayImageBuffer];
-    
-    return depthImage32;
 }
 
 - (nullable NSDictionary *)auxiliaryDictWithImageData:(nonnull NSData *)imageData
@@ -482,7 +385,7 @@ typedef struct _sImagePlatformContext {
                                        @"PixelFormat" : @(pixelFormatType),
                                        @"Width" : @(width)};
     
-    NSData *depthMapImageData = [NSData dataWithBytesNoCopy:_context.spBuff length:_context.spBuffSize];
+    NSData *depthMapImageData = [NSData dataWithBytesNoCopy:_context.spBuff length:_context.spBuffSize freeWhenDone:NO];
     
     NSDictionary *auxiliaryDict = [self auxiliaryDictWithImageData:depthMapImageData
                                                   infoMetadataDict:infoMetadataDict
@@ -501,15 +404,119 @@ typedef struct _sImagePlatformContext {
     // Use AVDepthData to get the auxiliary data dictionary.
     NSString *auxDataType = nil;
     NSDictionary *auxData = [depthData dictionaryRepresentationForAuxiliaryDataType:&auxDataType];
+    
+    CFDictionaryRef auxDataRef = (__bridge CFDictionaryRef)(auxData);
+    NSLog(@"auxDataRef = 0x%x", (unsigned int)auxDataRef);
 
     // Add auxiliary data to the image destination.
-    CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, (CFDictionaryRef)auxData);
+    CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, auxDataRef);
 
     if (CGImageDestinationFinalize(imageDestination)) {
         combinedImage = [[IMAGE_TYPE alloc] initWithData:imageData];
     }
     
     return combinedImage;
+}
+
+#pragma mark - Depth buffer proccesing - Unused examples
+
+- (CVPixelBufferRef)createPixelBufferFromGrayData:(char *)grayBuff
+                                            sizeX:(int)sizeX
+                                            sizeY:(int)sizeY {
+    CVPixelBufferRef grayImageBuffer = NULL;
+    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
+    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
+                           pixelFormatType:kCVPixelFormatType_32BGRA
+                                  withRect:pixelBufferRect];
+    
+    if (grayImageBuffer == NULL || didSetup == NO) {
+        return NULL;
+    }
+    
+    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
+    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+
+    const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
+    const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
+    
+    vImageConvert_Planar8ToBGRX8888(&grayBuffV, &grayBuffV, &grayBuffV, 0xFF, &rgbaBuffV, (vImage_Flags)0);
+    
+    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+    return grayImageBuffer;
+}
+
+- (IMAGE_TYPE*)createBGRADepthImage {
+    
+     NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
+    
+    char *grayBuff = malloc(_context.sizeY*_context.sizeX*sizeof(char));
+    const  double scalar = 255.;
+    double *doubleBuff1 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
+    vDSP_vsmulD((const double *)_context.pData, 1, &scalar, doubleBuff1, 1, _context.sizeY*_context.sizeX);
+    const double offset = -(scalar * (_context.minV / 2.));
+    double *doubleBuff2 = malloc(_context.sizeY*_context.sizeX*sizeof(double));
+    vDSP_vsaddD(doubleBuff1, 1, &offset, doubleBuff2, 1, _context.sizeY*_context.sizeX);
+    free(doubleBuff1);
+    vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  _context.sizeY*_context.sizeX);
+    free(doubleBuff2);
+        
+    CVPixelBufferRef grayImageBuffer = [self createPixelBufferFromGrayData:grayBuff sizeX:_context.sizeX sizeY:_context.sizeY];
+    
+    free(grayBuff);
+    
+    if (grayImageBuffer == NULL) {
+        return NULL;
+    }
+    
+    IMAGE_TYPE *depthImage32 = [self imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
+    
+    [self teardownPixelBuffer:&grayImageBuffer];
+    
+    return depthImage32;
+}
+
+- (CVPixelBufferRef)createFalseColorPixelBufferFromGrayData:(char *)grayBuff
+                                            sizeX:(int)sizeX
+                                            sizeY:(int)sizeY {
+    CVPixelBufferRef grayImageBuffer = NULL;
+    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
+    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
+                           pixelFormatType:kCVPixelFormatType_32BGRA
+                                  withRect:pixelBufferRect];
+    
+    if (grayImageBuffer == NULL || didSetup == NO) {
+        return NULL;
+    }
+    
+    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
+    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+    
+    char *colBuff1 = malloc(sizeX*sizeY);
+    char *colBuff2 = malloc(sizeX*sizeY);
+    char *pSource = grayBuff;
+    char *pDest1 = colBuff1;
+    char *pDest2 = colBuff2;
+    for (int y = 0; y < sizeY; ++y) {
+        for (int x= 0; x < sizeX; ++x) {
+            *pDest1 = (char)((*pSource) * 2);
+            *pDest2 = 0xFF - (char)((*pSource) * 2);
+            pSource++;
+            pDest1++;
+            pDest2++;
+        }
+    }
+    
+    const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
+    const vImage_Buffer colBuffV1 = {colBuff1, sizeY, sizeX, sizeX};
+    const vImage_Buffer colBuffV2 = {colBuff2, sizeY, sizeX, sizeX};
+    const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
+    
+    vImageConvert_Planar8ToBGRX8888(&colBuffV1, &grayBuffV, &colBuffV2, 0xFF, &rgbaBuffV, (vImage_Flags)0);
+    free(colBuff1);
+    free(colBuff2);
+    
+    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+    return grayImageBuffer;
 }
 
 #pragma mark - Utility - Crop

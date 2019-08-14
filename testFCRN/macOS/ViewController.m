@@ -33,7 +33,6 @@
 @property (nonatomic, strong) NSImage *inputImage;
 @property (nonatomic, strong) NSImage *croppedInputImage;
 
-@property (nonatomic, strong) NSImage *depthImage;
 @property (nonatomic, strong) NSImage *disparityImage;
 
 @property (nonatomic, strong) NSImage *combinedImage;
@@ -100,9 +99,8 @@
             {
                 NSString* imagePathStr = [[openPanel URL] path];
                 NSImage *image = [self configureImage:imagePathStr];
-                self.inputImage = image;
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-                    [self predictDepthMapFromInputImage];
+                    [self predictDepthMapFromInputImage:image];
                 });
             }
         }
@@ -157,10 +155,10 @@
     }];
 }
 
-- (void)predictDepthMapFromInputImage {
+- (void)predictDepthMapFromInputImage:(NSImage*)inputImage {
     NSError *error = nil;
     
-    NSImage *image = self.inputImage;
+    NSImage *image = [inputImage copy];
     
     VNRequestCompletionHandler completionHandler =  ^(VNRequest *request, NSError * _Nullable error) {
         NSArray *results = request.results;
@@ -184,26 +182,31 @@
                                                                             sizeX:sizeX
                                                                             sizeY:sizeY];
                     
+                    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
                     self.disparityImage = [self.imagePlatform createDisperityDepthImage];
                     //self.depthImage =  [self.imagePlatform createBGRADepthImage];
                                                             
-                    CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:self.inputImage.size
+                    CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:image.size
                                                                    withSizeForAspectRatio:self.disparityImage.size];
                     
-                    NSImage *croppedImage  = [self.imagePlatform cropImage:self.inputImage
+                    NSImage *croppedImage  = [self.imagePlatform cropImage:image
                                                               withCropRect:inputImageCropRect];
                     self.croppedInputImage = croppedImage;
                     
                     self.combinedImage =  [self.imagePlatform addDepthMapToExistingImage:self.croppedInputImage];
                                                             
                     [self didPrepareImages];
+                    });
                 }
             }
         }
     };
     
     self.request = [[VNCoreMLRequest alloc] initWithModel:self.model completionHandler:completionHandler];
-    self.handler = [[VNImageRequestHandler alloc] initWithCGImage:[image asCGImageRef]
+    
+    
+    CGImageRef imageRef = [image asCGImageRef];
+    self.handler = [[VNImageRequestHandler alloc] initWithCGImage: imageRef
                                                           options:@{VNImageOptionCIContext : self.imagePlatform.imagePlatformCoreContext}];
     //[self.handler performRequests:self.request];
     [self.handler performRequests:@[self.request] error:&error];
@@ -212,8 +215,6 @@
 - (void)didPrepareImages {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
-        //[self.depthImageView setImage:self.depthImage];
-        
         
         [self.depthImageView setImage:self.disparityImage];
         [self.depthImageSaveButton setEnabled:YES];

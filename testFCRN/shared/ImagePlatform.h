@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY;
 - (IMAGE_TYPE* __nullable)createDisperityDepthImage;
-- (IMAGE_TYPE* __nullable)createBGRADepthImage;
+//- (IMAGE_TYPE* __nullable)createBGRADepthImage;
 - (IMAGE_TYPE*)addDepthMapToExistingImage:(IMAGE_TYPE*)existingImage;
 
 - (CGRect)cropRectFromImageSize:(CGSize)imageSize
