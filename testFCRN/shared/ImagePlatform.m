@@ -395,11 +395,36 @@ typedef struct _sImagePlatformContext {
     memcpy(spBuff, _context.spBuff, _context.spBuffSize);
     CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
     
-    IMAGE_TYPE * depthImage32 = [self imageFromCVPixelBufferRef:grayImageBuffer imageOrientation:UIImageOrientationUp];
+    CIImage *unproccessedImage = [CIImage imageWithCVImageBuffer:grayImageBuffer];
+    CIFilter *lanczosScaleTransform = [CIFilter filterWithName:@"CILanczosScaleTransform"];
+    [lanczosScaleTransform setValue:unproccessedImage forKey:kCIInputImageKey];
+    
+#define kDepthMapScaleFactor (5.0f)
+    [lanczosScaleTransform setValue:@(kDepthMapScaleFactor) forKey: kCIInputScaleKey];
+    
+    CGFloat aspectRatio = pixelBufferRect.size.width / pixelBufferRect.size.height;
+    [lanczosScaleTransform setValue:@(aspectRatio) forKey: kCIInputAspectRatioKey];
+    
+    CIImage *scaledDepthImage = [lanczosScaleTransform outputImage];
+    CGRect scaledDepthImageRect = [scaledDepthImage extent];
+    CVPixelBufferRef scaledDepthPixelBufferRef = NULL;
+    didSetup = [self setupPixelBuffer:&scaledDepthPixelBufferRef
+                      pixelFormatType:kDepthFormat
+                             withRect:scaledDepthImageRect];
+    
+    if (scaledDepthPixelBufferRef == NULL || didSetup == NO) {
+        [self teardownPixelBuffer:&grayImageBuffer];
+        return NULL;
+    }
+    
+    [self.imagePlatformCoreContext render:scaledDepthImage toCVPixelBuffer:scaledDepthPixelBufferRef];
+    
+    IMAGE_TYPE * depthImage = [self imageFromCVPixelBufferRef:scaledDepthPixelBufferRef imageOrientation:UIImageOrientationUp];
     
     [self teardownPixelBuffer:&grayImageBuffer];
+    [self teardownPixelBuffer:&scaledDepthPixelBufferRef];
     
-    return depthImage32;
+    return depthImage;
     
 }
 

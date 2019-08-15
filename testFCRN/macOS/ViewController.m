@@ -224,6 +224,8 @@
         
         [self.imageView setContentsGravity:kCAGravityResizeAspect];
         [self.imageView setImage:self.croppedInputImage];
+        
+        [self.histogramImageView setImage:self.depthHistogramImage];
     });
 }
 
