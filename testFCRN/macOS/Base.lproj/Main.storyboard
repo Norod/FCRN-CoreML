@@ -758,7 +758,7 @@
                             </imageView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mlT-41-vHE">
                                 <rect key="frame" x="120" y="33" width="116" height="25"/>
-                                <buttonCell key="cell" type="roundTextured" title="Save depth img…" bezelStyle="texturedRounded" alignment="center" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="yZZ-od-aQx">
+                                <buttonCell key="cell" type="roundTextured" title="Save depth img…" bezelStyle="texturedRounded" alignment="left" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="yZZ-od-aQx">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
                                 </buttonCell>

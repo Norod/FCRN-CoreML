@@ -30,6 +30,8 @@
 
 @property (nonatomic, strong) ImagePlatform* imagePlatform;
 
+@property (nonatomic, strong) NSString *fileName;
+
 @property (nonatomic, strong) NSImage *inputImage;
 @property (nonatomic, strong) NSImage *croppedInputImage;
 
@@ -75,7 +77,8 @@
     [self.imageView setContentsGravity:kCAGravityResizeAspectFill];
     [self.imageView setImage:image];
     [self.aspectFillImageSaveButton setEnabled:YES];
-    [self.textView setStringValue:[imagePathStr lastPathComponent]];    // display the file name
+    self.fileName = [imagePathStr lastPathComponent];
+    [self.textView setStringValue:self.fileName];    // display the file name
     return image;
 }
 
@@ -88,10 +91,11 @@
 {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     
-    NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"jpeg", @"gif", @"png", @"tiff", nil];
+    NSArray* imageTypes = [NSImage imageTypes];
     [openPanel setAllowsMultipleSelection:NO];
     [openPanel setMessage:@"Choose an image file to display:"];
-    [openPanel setAllowedFileTypes:fileTypes];
+    [openPanel setAllowedFileTypes:imageTypes];
+    //[panel setNameFieldStringValue:newName];
     [openPanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Pictures/"]];
     [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
@@ -120,15 +124,23 @@
         return;
     }
     
+    NSString *fileNameToSuggest = [self.fileName stringByDeletingPathExtension];
+    NSString *fileExtentionToSuggest = [self.fileName pathExtension];
+    NSString *filePathToSuggest = nil;
+    
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     NSArray *fileTypes = [NSArray arrayWithObjects:@"jpg", @"jpeg", @"png", @"tiff", nil];
     [savePanel setAllowedFileTypes:fileTypes];
     [savePanel setAllowsOtherFileTypes:NO];
     if (sender == self.depthImageSaveButton) {
         [savePanel setMessage:@"Save depth image file:"];
+        filePathToSuggest = [NSString stringWithFormat:@"%@-fcrn_depth.%@", fileNameToSuggest, fileExtentionToSuggest];
     } else {
-        [savePanel setMessage:@"Save aspect fill image file:"];
+        [savePanel setMessage:@"Save aspect-fill cropped image file:"];
+        filePathToSuggest = [NSString stringWithFormat:@"%@-fcrn.%@", fileNameToSuggest, fileExtentionToSuggest];
     }
+    
+    [savePanel setNameFieldStringValue:filePathToSuggest];
     [savePanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Pictures/"]];
     [savePanel setCanCreateDirectories:YES];
     [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {

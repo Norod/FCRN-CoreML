@@ -405,7 +405,10 @@ typedef struct _sImagePlatformContext {
     CGFloat aspectRatio = 1.0f;
     [lanczosScaleTransform setValue:@(aspectRatio) forKey: kCIInputAspectRatioKey];
     
-    CIImage *scaledDepthImage = [lanczosScaleTransform outputImage];
+    CIFilter *colorInvert = [CIFilter filterWithName:@"CIColorInvert"];
+    [colorInvert setValue:[lanczosScaleTransform outputImage] forKey:kCIInputImageKey];
+    
+    CIImage *scaledDepthImage = [colorInvert outputImage];
     CGRect scaledDepthImageRect = [scaledDepthImage extent];
     CVPixelBufferRef scaledDepthPixelBufferRef = NULL;
     didSetup = [self setupPixelBuffer:&scaledDepthPixelBufferRef
