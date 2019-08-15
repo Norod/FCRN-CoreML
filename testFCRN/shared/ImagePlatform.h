@@ -72,6 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IMAGE_TYPE* __nullable)cropImage:(IMAGE_TYPE*)image withCropRect:(CGRect)cropRect;
 
+- (IMAGE_TYPE* __nullable)depthHistogram;
+
 @end
 
 NS_ASSUME_NONNULL_END

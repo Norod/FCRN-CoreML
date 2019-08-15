@@ -10,7 +10,7 @@
 
 //#define kDepthFormat kCVPixelFormatType_DisparityFloat32
 #define kDepthFormat kCVPixelFormatType_DepthFloat32
- 
+
 @import CoreImage;
 @import Accelerate;
 @import AVFoundation;
@@ -53,7 +53,7 @@ typedef struct _sImagePlatformContext {
     size_t  spBuffSize;
     float   maxV;
     float   minV;
-   
+    
     
 }sImagePlatformContext, *sImagePlatformContextPtr;
 
@@ -192,29 +192,29 @@ typedef struct _sImagePlatformContext {
 
 - (CGImagePropertyOrientation) CGImagePropertyOrientationForUIImageOrientation:(UIImageOrientation)uiOrientation {
     switch (uiOrientation) {
-    default:
-    case UIImageOrientationUp: return kCGImagePropertyOrientationUp;
-    case UIImageOrientationDown: return kCGImagePropertyOrientationDown;
-    case UIImageOrientationLeft: return kCGImagePropertyOrientationLeft;
-    case UIImageOrientationRight: return kCGImagePropertyOrientationRight;
-    case UIImageOrientationUpMirrored: return kCGImagePropertyOrientationUpMirrored;
-    case UIImageOrientationDownMirrored: return kCGImagePropertyOrientationDownMirrored;
-    case UIImageOrientationLeftMirrored: return kCGImagePropertyOrientationLeftMirrored;
-    case UIImageOrientationRightMirrored: return kCGImagePropertyOrientationRightMirrored;
+        default:
+        case UIImageOrientationUp: return kCGImagePropertyOrientationUp;
+        case UIImageOrientationDown: return kCGImagePropertyOrientationDown;
+        case UIImageOrientationLeft: return kCGImagePropertyOrientationLeft;
+        case UIImageOrientationRight: return kCGImagePropertyOrientationRight;
+        case UIImageOrientationUpMirrored: return kCGImagePropertyOrientationUpMirrored;
+        case UIImageOrientationDownMirrored: return kCGImagePropertyOrientationDownMirrored;
+        case UIImageOrientationLeftMirrored: return kCGImagePropertyOrientationLeftMirrored;
+        case UIImageOrientationRightMirrored: return kCGImagePropertyOrientationRightMirrored;
     }
 }
 
 -(UIImageOrientation) UIImageOrientationForCGImagePropertyOrientation:(CGImagePropertyOrientation)cgOrientation {
     switch (cgOrientation) {
-    default:
-    case kCGImagePropertyOrientationUp: return UIImageOrientationUp;
-    case kCGImagePropertyOrientationDown: return UIImageOrientationDown;
-    case kCGImagePropertyOrientationLeft: return UIImageOrientationLeft;
-    case kCGImagePropertyOrientationRight: return UIImageOrientationRight;
-    case kCGImagePropertyOrientationUpMirrored: return UIImageOrientationUpMirrored;
-    case kCGImagePropertyOrientationDownMirrored: return UIImageOrientationDownMirrored;
-    case kCGImagePropertyOrientationLeftMirrored: return UIImageOrientationLeftMirrored;
-    case kCGImagePropertyOrientationRightMirrored: return UIImageOrientationRightMirrored;
+        default:
+        case kCGImagePropertyOrientationUp: return UIImageOrientationUp;
+        case kCGImagePropertyOrientationDown: return UIImageOrientationDown;
+        case kCGImagePropertyOrientationLeft: return UIImageOrientationLeft;
+        case kCGImagePropertyOrientationRight: return UIImageOrientationRight;
+        case kCGImagePropertyOrientationUpMirrored: return UIImageOrientationUpMirrored;
+        case kCGImagePropertyOrientationDownMirrored: return UIImageOrientationDownMirrored;
+        case kCGImagePropertyOrientationLeftMirrored: return UIImageOrientationLeftMirrored;
+        case kCGImagePropertyOrientationRightMirrored: return UIImageOrientationRightMirrored;
     }
 }
 
@@ -269,13 +269,76 @@ typedef struct _sImagePlatformContext {
     return YES;
 }
 
+#pragma mark - Utility Filters
+
+- (IMAGE_TYPE*)depthHistogram {
+    NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
+    
+    CVPixelBufferRef grayImageBuffer = NULL;
+    CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)(_context.sizeX), (CGFloat)(_context.sizeY));
+    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
+                           pixelFormatType:kDepthFormat
+                                  withRect:pixelBufferRect];
+    
+    if (grayImageBuffer == NULL || didSetup == NO) {
+        return NULL;
+    }
+    
+    CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
+    float *spBuff = (float *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+    memcpy(spBuff, _context.spBuff, _context.spBuffSize);
+    CVPixelBufferUnlockBaseAddress(grayImageBuffer, 0);
+    
+    CIImage *ciImage = [self ciImageFromPixelBuffer:grayImageBuffer imageOrientation:UIImageOrientationUp];
+    
+    CIFilter *areaHistogramFilter = [CIFilter filterWithName:@"CIAreaHistogram"];
+    [areaHistogramFilter setValue:ciImage forKey:kCIInputImageKey];
+    
+#define kInputHeight 100
+#define kInputScale  50
+    CGRect imageExtent = [ciImage extent];
+    CIVector *extentVector = [CIVector vectorWithCGRect:imageExtent];
+    [areaHistogramFilter setValue:extentVector forKey:kCIInputExtentKey];
+    [areaHistogramFilter setValue:@(255) forKey: @"inputCount"];
+    [areaHistogramFilter setValue:@(kInputScale) forKey: kCIInputScaleKey];
+    
+    CIImage *areaHistogramImage = [areaHistogramFilter outputImage];
+    
+    CIFilter *histogramDisplayFilter = [CIFilter filterWithName:@"CIHistogramDisplayFilter"];
+    [histogramDisplayFilter setValue:areaHistogramImage forKey:kCIInputImageKey];
+    [histogramDisplayFilter setValue:@(kInputHeight)  forKey:@"inputHeight"];
+    [histogramDisplayFilter setValue:@(_context.maxV) forKey:@"inputHighLimit"];
+    [histogramDisplayFilter setValue:@(_context.minV) forKey:@"inputLowLimit"];
+    
+    
+    CIImage *histogramDisplayImage = [histogramDisplayFilter outputImage];
+    CGRect histogramDisplayImageRect = [histogramDisplayImage extent];
+    CVPixelBufferRef histogramPixelBufferRef = NULL;
+    didSetup = [self setupPixelBuffer:&histogramPixelBufferRef
+                      pixelFormatType:kCVPixelFormatType_32BGRA
+                             withRect:histogramDisplayImageRect];
+    
+    if (histogramPixelBufferRef == NULL || didSetup == NO) {
+        [self teardownPixelBuffer:&grayImageBuffer];
+        return NULL;
+    }
+    
+    [self.imagePlatformCoreContext render:histogramDisplayImage toCVPixelBuffer:histogramPixelBufferRef];
+    IMAGE_TYPE * histogramImage = [self imageFromCVPixelBufferRef:histogramPixelBufferRef imageOrientation:UIImageOrientationUp];
+    
+    [self teardownPixelBuffer:&grayImageBuffer];
+    [self teardownPixelBuffer:&histogramPixelBufferRef];
+    
+    return histogramImage;
+}
+
 #pragma mark - Depth buffer proccesing
 
 - (BOOL)prepareImagePlatformContextFromResultData:(uint8_t *)pData
                                  pixelSizeInBytes:(uint8_t)pixelSizeInBytes
                                             sizeX:(int)sizeX
                                             sizeY:(int)sizeY {
-           
+    
     if ((_context.sizeX != sizeX) || (_context.sizeY != sizeY) || (_context.pixelSizeInBytes != pixelSizeInBytes)) {
         [self teardownInternalContext];
     }
@@ -294,11 +357,13 @@ typedef struct _sImagePlatformContext {
         _context.spBuff = malloc(_context.spBuffSize);
     }
     
-   double maxVD = 0.;
-   vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
-   const  double scalar = 1.0/maxVD;
-   vDSP_vsmulD((const double *)pData, 1, &scalar, (double *)_context.pData, 1, sizeY*sizeX);
-   vDSP_vdpsp((const double *)_context.pData,1, (float*)_context.spBuff, 1,  sizeY*sizeX);
+    double maxVD = 0.;
+    vDSP_maxvD((const double *)pData, 1, &maxVD, sizeY*sizeX);
+    double minVD = 0.;
+    vDSP_minvD((const double *)pData, 1, &minVD, sizeY*sizeX);
+    const  double scalar = (1.0 / (maxVD+(minVD/2.0)));
+    vDSP_vsmulD((const double *)pData, 1, &scalar, (double *)_context.pData, 1, sizeY*sizeX);
+    vDSP_vdpsp((const double *)_context.pData,1, (float*)_context.spBuff, 1,  sizeY*sizeX);
     
     float maxV = 0.;
     float minV = 0.;
@@ -307,7 +372,7 @@ typedef struct _sImagePlatformContext {
     
     _context.maxV = maxV;
     _context.minV = minV;
-        
+    
     return YES;
 }
 
@@ -317,9 +382,9 @@ typedef struct _sImagePlatformContext {
     
     CVPixelBufferRef grayImageBuffer = NULL;
     CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)(_context.sizeX), (CGFloat)(_context.sizeY));
-     BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
-                            pixelFormatType:kDepthFormat
-                                   withRect:pixelBufferRect];
+    BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
+                           pixelFormatType:kDepthFormat
+                                  withRect:pixelBufferRect];
     
     if (grayImageBuffer == NULL || didSetup == NO) {
         return NULL;
@@ -348,14 +413,14 @@ typedef struct _sImagePlatformContext {
     
     
     
-   // NSError *error = nil;
+    // NSError *error = nil;
     
     NSDictionary *auxDict = @{(NSString*)kCGImageAuxiliaryDataInfoData : imageData,
                               (NSString*)kCGImageAuxiliaryDataInfoMetadata : (id)CFBridgingRelease(imgMetaData),
                               (NSString*)kCGImageAuxiliaryDataInfoDataDescription : infoMetadataDict};
     
     //[AVDepthData depthDataFromDictionaryRepresentation:auxDict error:&error];
-
+    
     return auxDict;
 }
 
@@ -374,7 +439,7 @@ typedef struct _sImagePlatformContext {
     
     NSString *xmpPath = [[NSBundle mainBundle] pathForResource:orientationXMPFile ofType:@"xmp"];
     
-   
+    
     size_t bytesPerRow = _context.sizeX * sizeof(float);
     size_t height = _context.sizeY;
     size_t width  = _context.sizeX;
@@ -394,23 +459,23 @@ typedef struct _sImagePlatformContext {
     NSError *error = nil;
     AVDepthData *depthData = [AVDepthData depthDataFromDictionaryRepresentation:auxiliaryDict error:&error];
     
-     NSMutableData *imageData = [NSMutableData data];
-
+    NSMutableData *imageData = [NSMutableData data];
+    
     CGImageDestinationRef imageDestination =  CGImageDestinationCreateWithData((CFMutableDataRef)imageData, (CFStringRef)@"public.jpeg", 1, NULL);
-
+    
     CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], NULL);
-
-
+    
+    
     // Use AVDepthData to get the auxiliary data dictionary.
     NSString *auxDataType = nil;
     NSDictionary *auxData = [depthData dictionaryRepresentationForAuxiliaryDataType:&auxDataType];
     
     CFDictionaryRef auxDataRef = (__bridge CFDictionaryRef)(auxData);
     NSLog(@"auxDataRef = 0x%x", (unsigned int)auxDataRef);
-
+    
     // Add auxiliary data to the image destination.
     CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, auxDataRef);
-
+    
     if (CGImageDestinationFinalize(imageDestination)) {
         combinedImage = [[IMAGE_TYPE alloc] initWithData:imageData];
     }
@@ -435,7 +500,7 @@ typedef struct _sImagePlatformContext {
     
     CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
     uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
-
+    
     const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
     const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
     
@@ -447,7 +512,7 @@ typedef struct _sImagePlatformContext {
 
 - (IMAGE_TYPE*)createBGRADepthImage {
     
-     NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
+    NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
     
     char *grayBuff = malloc(_context.sizeY*_context.sizeX*sizeof(char));
     const  double scalar = 255.;
@@ -459,7 +524,7 @@ typedef struct _sImagePlatformContext {
     free(doubleBuff1);
     vDSP_vfix8D(doubleBuff2, 1, grayBuff, 1,  _context.sizeY*_context.sizeX);
     free(doubleBuff2);
-        
+    
     CVPixelBufferRef grayImageBuffer = [self createPixelBufferFromGrayData:grayBuff sizeX:_context.sizeX sizeY:_context.sizeY];
     
     free(grayBuff);
@@ -476,8 +541,8 @@ typedef struct _sImagePlatformContext {
 }
 
 - (CVPixelBufferRef)createFalseColorPixelBufferFromGrayData:(char *)grayBuff
-                                            sizeX:(int)sizeX
-                                            sizeY:(int)sizeY {
+                                                      sizeX:(int)sizeX
+                                                      sizeY:(int)sizeY {
     CVPixelBufferRef grayImageBuffer = NULL;
     CGRect pixelBufferRect = CGRectMake(0.0f, 0.0f, (CGFloat)sizeX, (CGFloat)sizeY);
     BOOL didSetup = [self setupPixelBuffer:&grayImageBuffer
@@ -523,7 +588,7 @@ typedef struct _sImagePlatformContext {
 
 - (CGRect)cropRectFromImageSize:(CGSize)imageSize
          withSizeForAspectRatio:(CGSize)sizeForaspectRatio {
-
+    
     CGRect cropRect = CGRectZero;
     CGFloat inWidth = imageSize.width;
     CGFloat inHeight = imageSize.height;
@@ -557,23 +622,23 @@ typedef struct _sImagePlatformContext {
     CGImageRef inputImageRef = [image asCGImageRef];
     CIImage *ciInputImage = [CIImage imageWithCGImage:inputImageRef];
     CGImageRef imageRef = [self.imagePlatformCoreContext
-                          createCGImage:ciInputImage
-                          fromRect:cropRect];
-       
-       if (imageRef) {
-   #ifdef MACOS_TARGET
-           size_t imageWidth  = CGImageGetWidth(imageRef);
-           size_t imageHeight = CGImageGetHeight(imageRef);
-           NSSize imageSize = NSMakeSize((CGFloat)imageWidth, (CGFloat)imageHeight);
-           
-           
-           croppedImage = [[IMAGE_TYPE alloc] initWithCGImage:imageRef size:imageSize] ;
-   #else
-           croppedImage = [IMAGE_TYPE imageWithCGImage:imageRef scale:1.0 orientation:imageOrientation];
-   #endif
-           
-           CGImageRelease(imageRef);
-       }
+                           createCGImage:ciInputImage
+                           fromRect:cropRect];
+    
+    if (imageRef) {
+#ifdef MACOS_TARGET
+        size_t imageWidth  = CGImageGetWidth(imageRef);
+        size_t imageHeight = CGImageGetHeight(imageRef);
+        NSSize imageSize = NSMakeSize((CGFloat)imageWidth, (CGFloat)imageHeight);
+        
+        
+        croppedImage = [[IMAGE_TYPE alloc] initWithCGImage:imageRef size:imageSize] ;
+#else
+        croppedImage = [IMAGE_TYPE imageWithCGImage:imageRef scale:1.0 orientation:imageOrientation];
+#endif
+        
+        CGImageRelease(imageRef);
+    }
     
     return croppedImage;
 }

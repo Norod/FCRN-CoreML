@@ -34,6 +34,7 @@
 @property (nonatomic, strong) NSImage *croppedInputImage;
 
 @property (nonatomic, strong) NSImage *disparityImage;
+@property (nonatomic, strong) NSImage *depthHistogramImage;
 
 @property (nonatomic, strong) NSImage *combinedImage;
 
@@ -194,6 +195,8 @@
                     self.croppedInputImage = croppedImage;
                     
                     self.combinedImage =  [self.imagePlatform addDepthMapToExistingImage:self.croppedInputImage];
+                        
+                    self.depthHistogramImage = [self.imagePlatform depthHistogram];
                                                             
                     [self didPrepareImages];
                     });
