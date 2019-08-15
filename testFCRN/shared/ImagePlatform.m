@@ -402,7 +402,7 @@ typedef struct _sImagePlatformContext {
 #define kDepthMapScaleFactor (5.0f)
     [lanczosScaleTransform setValue:@(kDepthMapScaleFactor) forKey: kCIInputScaleKey];
     
-    CGFloat aspectRatio = pixelBufferRect.size.width / pixelBufferRect.size.height;
+    CGFloat aspectRatio = 1.0f;
     [lanczosScaleTransform setValue:@(aspectRatio) forKey: kCIInputAspectRatioKey];
     
     CIImage *scaledDepthImage = [lanczosScaleTransform outputImage];
