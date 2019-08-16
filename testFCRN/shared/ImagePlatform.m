@@ -452,8 +452,8 @@ typedef struct _sImagePlatformContext {
     return auxDict;
 }
 
-- (IMAGE_TYPE*)addDepthMapToExistingImage:(IMAGE_TYPE*)existingImage {
-    IMAGE_TYPE *combinedImage = NULL;
+- (NSData*)addDepthMapToExistingImage:(IMAGE_TYPE*)existingImage {
+    NSData *combinedImageData = NULL;
     
     NSString *portraitStr = @"Portrait";
     NSString *landscapeStr = @"Landscape";
@@ -505,10 +505,10 @@ typedef struct _sImagePlatformContext {
     CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, auxDataRef);
     
     if (CGImageDestinationFinalize(imageDestination)) {
-        combinedImage = [[IMAGE_TYPE alloc] initWithData:imageData];
+        combinedImageData = [NSData dataWithData:imageData];
     }
     
-    return combinedImage;
+    return combinedImageData;
 }
 
 #pragma mark - Depth buffer proccesing - Unused examples

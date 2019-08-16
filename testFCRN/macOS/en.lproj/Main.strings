@@ -400,3 +400,10 @@
 
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
+
+"depthPrediction.loading" = "Loading model";
+"depthPrediction.readyToOpen" = "Please open an image";
+"depthPrediction.failToLoad" = "Error loading model";
+"depthPrediction.predicting" = "Please wait...";
+"depthPrediction.completionHandler" = "Processing results...";
+"depthPrediction.didPrepareImages" = "Images are ready";

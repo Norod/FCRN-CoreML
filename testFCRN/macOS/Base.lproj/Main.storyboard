@@ -707,21 +707,21 @@
             <objects>
                 <viewController storyboardIdentifier="viewController" id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="516" height="334"/>
+                        <rect key="frame" x="0.0" y="0.0" width="516" height="368"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="eUm-Lt-vqK" customClass="ImageLayerView">
-                                <rect key="frame" x="17" y="125" width="222" height="192"/>
+                                <rect key="frame" x="17" y="125" width="222" height="226"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageFrameStyle="photo" id="PlW-bn-0Wz"/>
                             </imageView>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="YEg-Hn-NDq" customClass="ImageLayerView">
-                                <rect key="frame" x="241" y="125" width="258" height="192"/>
+                                <rect key="frame" x="241" y="125" width="258" height="226"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="photo" id="wph-Jb-Elv"/>
                             </imageView>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WR-tN-hFX">
                                 <rect key="frame" x="20" y="98" width="218" height="19"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="19" id="YYg-JE-fWI"/>
+                                    <constraint firstAttribute="height" constant="19" id="8me-Ov-VsH"/>
                                 </constraints>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="Please open an image" id="nQ1-yq-3DT">
                                     <font key="font" metaFont="menu" size="11"/>
@@ -732,7 +732,7 @@
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X46-Eb-qkv">
                                 <rect key="frame" x="22" y="65" width="50" height="25"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="24" id="PxP-cx-Hdd"/>
+                                    <constraint firstAttribute="height" constant="24" id="mEw-od-YX7"/>
                                 </constraints>
                                 <buttonCell key="cell" type="roundTextured" title="Open…" bezelStyle="texturedRounded" alignment="center" controlSize="small" state="on" borderStyle="border" inset="2" id="ep8-pQ-nvq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -743,7 +743,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WK5-7S-do0">
-                                <rect key="frame" x="120" y="65" width="116" height="25"/>
+                                <rect key="frame" x="112" y="65" width="124" height="25"/>
                                 <buttonCell key="cell" type="roundTextured" title="Save cropped img…" bezelStyle="texturedRounded" alignment="left" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="bp7-UF-hqH">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
@@ -753,11 +753,11 @@
                                 </connections>
                             </button>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Yoa-kG-g8Y">
-                                <rect key="frame" x="241" y="23" width="258" height="100"/>
+                                <rect key="frame" x="241" y="5" width="258" height="118"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="photo" id="iTa-jD-i0e"/>
                             </imageView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mlT-41-vHE">
-                                <rect key="frame" x="120" y="33" width="116" height="25"/>
+                                <rect key="frame" x="112" y="33" width="124" height="25"/>
                                 <buttonCell key="cell" type="roundTextured" title="Save depth img…" bezelStyle="texturedRounded" alignment="left" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="yZZ-od-aQx">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
@@ -766,46 +766,64 @@
                                     <action selector="saveImageAction:" target="XfG-lQ-9wD" id="VrN-Jk-yUN"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K9N-tb-YCY">
+                                <rect key="frame" x="112" y="2" width="124" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="23" id="IXD-cs-Vwq"/>
+                                </constraints>
+                                <buttonCell key="cell" type="roundTextured" title="Save combined img…" bezelStyle="texturedRounded" alignment="left" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="6Ct-vl-rIQ">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu" size="11"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="saveImageAction:" target="XfG-lQ-9wD" id="TaH-Vn-nEG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="top" secondItem="YEg-Hn-NDq" secondAttribute="top" id="06I-Pk-vGd"/>
-                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="leading" secondItem="Yoa-kG-g8Y" secondAttribute="leading" id="26N-aM-iKF"/>
-                            <constraint firstItem="0WR-tN-hFX" firstAttribute="top" secondItem="eUm-Lt-vqK" secondAttribute="bottom" constant="11" id="639-Uc-bbE"/>
-                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="leading" secondItem="eUm-Lt-vqK" secondAttribute="trailing" constant="8" symbolic="YES" id="7Bd-nb-mnh"/>
-                            <constraint firstAttribute="bottom" secondItem="mlT-41-vHE" secondAttribute="bottom" constant="34" id="7fn-aM-e8w"/>
-                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="leading" secondItem="WK5-7S-do0" secondAttribute="trailing" constant="8" symbolic="YES" id="8vG-gb-QgR"/>
-                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="leading" secondItem="0WR-tN-hFX" secondAttribute="trailing" constant="8" symbolic="YES" id="9Zv-Zh-4Kc"/>
-                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="leading" secondItem="mlT-41-vHE" secondAttribute="trailing" constant="8" symbolic="YES" id="I1e-fU-Zmi"/>
-                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="Nqc-w3-pK0"/>
-                            <constraint firstItem="X46-Eb-qkv" firstAttribute="firstBaseline" secondItem="WK5-7S-do0" secondAttribute="firstBaseline" id="OMo-67-oAQ"/>
-                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="bottom" secondItem="YEg-Hn-NDq" secondAttribute="bottom" id="POX-3w-JtC"/>
-                            <constraint firstAttribute="bottom" secondItem="Yoa-kG-g8Y" secondAttribute="bottom" constant="26" id="QVt-Ev-WtE"/>
-                            <constraint firstItem="WK5-7S-do0" firstAttribute="leading" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="48" id="RZg-95-dWT"/>
-                            <constraint firstAttribute="trailing" secondItem="YEg-Hn-NDq" secondAttribute="trailing" constant="20" symbolic="YES" id="Xok-He-zfB"/>
-                            <constraint firstItem="X46-Eb-qkv" firstAttribute="baseline" secondItem="WK5-7S-do0" secondAttribute="baseline" id="YEq-sk-yGX"/>
-                            <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="bnI-eq-n3V"/>
-                            <constraint firstItem="mlT-41-vHE" firstAttribute="top" secondItem="WK5-7S-do0" secondAttribute="bottom" constant="8" symbolic="YES" id="g5T-4Z-g4Q"/>
-                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="trailing" secondItem="Yoa-kG-g8Y" secondAttribute="trailing" id="h6T-nu-fBz"/>
-                            <constraint firstItem="X46-Eb-qkv" firstAttribute="top" secondItem="0WR-tN-hFX" secondAttribute="bottom" constant="8" symbolic="YES" id="tZ9-ni-VQW"/>
-                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" symbolic="YES" id="vdN-jy-LE9"/>
-                            <constraint firstAttribute="bottom" secondItem="X46-Eb-qkv" secondAttribute="bottom" constant="66" id="vgq-hc-7N6"/>
-                            <constraint firstItem="WK5-7S-do0" firstAttribute="leading" secondItem="mlT-41-vHE" secondAttribute="leading" id="vsk-4f-thO"/>
-                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="top" secondItem="YEg-Hn-NDq" secondAttribute="bottom" constant="8" symbolic="YES" id="wd3-mn-viz"/>
-                            <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" secondItem="X46-Eb-qkv" secondAttribute="leading" id="xgQ-4a-rXZ"/>
+                            <constraint firstItem="WK5-7S-do0" firstAttribute="leading" secondItem="mlT-41-vHE" secondAttribute="leading" id="4FG-JI-REq"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" symbolic="YES" id="4OF-JA-Vsm"/>
+                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="leading" secondItem="WK5-7S-do0" secondAttribute="trailing" constant="8" symbolic="YES" id="8o3-qB-8Of"/>
+                            <constraint firstItem="X46-Eb-qkv" firstAttribute="firstBaseline" secondItem="WK5-7S-do0" secondAttribute="firstBaseline" id="AFK-r6-Qoi"/>
+                            <constraint firstItem="mlT-41-vHE" firstAttribute="top" secondItem="WK5-7S-do0" secondAttribute="bottom" constant="8" symbolic="YES" id="BHM-au-L6D"/>
+                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="trailing" secondItem="YEg-Hn-NDq" secondAttribute="trailing" id="Hhc-Qi-5Xj"/>
+                            <constraint firstItem="X46-Eb-qkv" firstAttribute="top" secondItem="0WR-tN-hFX" secondAttribute="bottom" constant="8" symbolic="YES" id="LTt-UK-gPe"/>
+                            <constraint firstItem="mlT-41-vHE" firstAttribute="trailing" secondItem="K9N-tb-YCY" secondAttribute="trailing" id="M1u-3H-VTi"/>
+                            <constraint firstItem="WK5-7S-do0" firstAttribute="leading" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="40" id="PAu-1y-OH3"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="bottom" secondItem="YEg-Hn-NDq" secondAttribute="bottom" id="S77-Qn-FbM"/>
+                            <constraint firstAttribute="bottom" secondItem="X46-Eb-qkv" secondAttribute="bottom" constant="66" id="Wht-ux-azY"/>
+                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="leading" secondItem="eUm-Lt-vqK" secondAttribute="trailing" constant="8" symbolic="YES" id="aE9-7b-wfg"/>
+                            <constraint firstItem="K9N-tb-YCY" firstAttribute="top" secondItem="mlT-41-vHE" secondAttribute="bottom" constant="8" symbolic="YES" id="dFM-nU-GA0"/>
+                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="leading" secondItem="mlT-41-vHE" secondAttribute="trailing" constant="8" symbolic="YES" id="ejb-8E-1qy"/>
+                            <constraint firstItem="mlT-41-vHE" firstAttribute="leading" secondItem="K9N-tb-YCY" secondAttribute="leading" id="nfo-NN-btf"/>
+                            <constraint firstAttribute="trailing" secondItem="YEg-Hn-NDq" secondAttribute="trailing" constant="20" symbolic="YES" id="nod-11-eSn"/>
+                            <constraint firstItem="X46-Eb-qkv" firstAttribute="baseline" secondItem="WK5-7S-do0" secondAttribute="baseline" id="pCh-dX-UMs"/>
+                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="leading" secondItem="0WR-tN-hFX" secondAttribute="trailing" constant="8" symbolic="YES" id="pd2-Kg-L4e"/>
+                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="top" secondItem="YEg-Hn-NDq" secondAttribute="bottom" constant="8" symbolic="YES" id="qlw-9f-DEA"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="top" secondItem="YEg-Hn-NDq" secondAttribute="top" id="rSX-cT-zOU"/>
+                            <constraint firstAttribute="bottom" secondItem="K9N-tb-YCY" secondAttribute="bottom" constant="3" id="u9i-DX-c9e"/>
+                            <constraint firstAttribute="bottom" secondItem="Yoa-kG-g8Y" secondAttribute="bottom" constant="8" id="urW-We-cEe"/>
+                            <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" secondItem="X46-Eb-qkv" secondAttribute="leading" id="wGT-Ne-rCD"/>
+                            <constraint firstItem="0WR-tN-hFX" firstAttribute="top" secondItem="eUm-Lt-vqK" secondAttribute="bottom" constant="11" id="wgH-8p-xd0"/>
+                            <constraint firstItem="0WR-tN-hFX" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="xVm-tk-YAm"/>
+                            <constraint firstItem="eUm-Lt-vqK" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="xvq-WL-emo"/>
+                            <constraint firstItem="Yoa-kG-g8Y" firstAttribute="leading" secondItem="YEg-Hn-NDq" secondAttribute="leading" id="yjV-TF-Jif"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="aspectFillImageSaveButton" destination="WK5-7S-do0" id="bhr-lz-vTA"/>
+                        <outlet property="combinedImageSaveButton" destination="K9N-tb-YCY" id="EZD-OH-sM7"/>
                         <outlet property="depthImageSaveButton" destination="mlT-41-vHE" id="Vyf-Bi-6AH"/>
                         <outlet property="depthImageView" destination="YEg-Hn-NDq" id="8yA-Vr-m8V"/>
                         <outlet property="histogramImageView" destination="Yoa-kG-g8Y" id="jkf-ej-Lrj"/>
+                        <outlet property="imageOpenButton" destination="X46-Eb-qkv" id="GYH-D0-l7u"/>
                         <outlet property="imageView" destination="eUm-Lt-vqK" id="x8w-Vc-WtQ"/>
                         <outlet property="textView" destination="0WR-tN-hFX" id="I18-Md-CD9"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="105" y="699"/>
+            <point key="canvasLocation" x="93" y="714"/>
         </scene>
     </scenes>
 </document>

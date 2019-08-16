@@ -25,6 +25,8 @@
 		E87F8F8E22FC735D00E48DB8 /* Matte.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8922FC735C00E48DB8 /* Matte.xmp */; };
 		E87F8F8F22FC735D00E48DB8 /* DepthLandscape.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */; };
 		E87F8F9022FC735D00E48DB8 /* DepthLandscape.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */; };
+		E88BA33B2306E7CC006D4250 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E88BA3392306E7CC006D4250 /* Localizable.strings */; };
+		E88BA33C2306E7CC006D4250 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E88BA3392306E7CC006D4250 /* Localizable.strings */; };
 		E896783222EF013D002D34D2 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
 		E8A7368622ED7D6B00309FD0 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
 		E8CB4B5022F1E21E00D924B2 /* ImageLayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CB4B4F22F1E21E00D924B2 /* ImageLayerView.m */; };
@@ -47,6 +49,8 @@
 		E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthPortrait.xmp; sourceTree = "<group>"; };
 		E87F8F8922FC735C00E48DB8 /* Matte.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Matte.xmp; sourceTree = "<group>"; };
 		E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthLandscape.xmp; sourceTree = "<group>"; };
+		E88BA33A2306E7CC006D4250 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E88BA33D2306E7D2006D4250 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E896783D22EF013D002D34D2 /* testFCRN16.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testFCRN16.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A7365A22ED7BE400309FD0 /* testFCRN32.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testFCRN32.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A7368422ED7D6B00309FD0 /* ImagePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePlatform.h; sourceTree = "<group>"; };
@@ -98,6 +102,7 @@
 		E8201F4D22EF1B760098B7DB /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				E88BA3392306E7CC006D4250 /* Localizable.strings */,
 				E8201FA522EF1DDD0098B7DB /* Main.storyboard */,
 				E8201F9722EF1D570098B7DB /* Assets.xcassets */,
 				E8201F8222EF1C840098B7DB /* AppDelegate.h */,
@@ -230,6 +235,7 @@
 				E87F8F8C22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */,
 				E8201FAA22EF1DDD0098B7DB /* Main.storyboard in Resources */,
 				E87F8F9022FC735D00E48DB8 /* DepthLandscape.xmp in Resources */,
+				E88BA33C2306E7CC006D4250 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +248,7 @@
 				E87F8F8B22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */,
 				E8201FA922EF1DDD0098B7DB /* Main.storyboard in Resources */,
 				E87F8F8F22FC735D00E48DB8 /* DepthLandscape.xmp in Resources */,
+				E88BA33B2306E7CC006D4250 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +291,15 @@
 				E8201FAC22EF24410098B7DB /* en */,
 			);
 			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		E88BA3392306E7CC006D4250 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E88BA33A2306E7CC006D4250 /* Base */,
+				E88BA33D2306E7D2006D4250 /* en */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

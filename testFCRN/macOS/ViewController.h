@@ -18,8 +18,11 @@
 @property (nonatomic, weak) IBOutlet NSTextField    *textView;         // the image file name to display
 
 @property (nonatomic, weak) IBOutlet NSImageView    *histogramImageView;
+
+@property (nonatomic, weak) IBOutlet NSButton       *imageOpenButton;
 @property (nonatomic, weak) IBOutlet NSButton       *depthImageSaveButton;
 @property (nonatomic, weak) IBOutlet NSButton       *aspectFillImageSaveButton;
+@property (nonatomic, weak) IBOutlet NSButton       *combinedImageSaveButton;
 
 
 @end

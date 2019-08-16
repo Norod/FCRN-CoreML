@@ -38,7 +38,7 @@
 @property (nonatomic, strong) NSImage *disparityImage;
 @property (nonatomic, strong) NSImage *depthHistogramImage;
 
-@property (nonatomic, strong) NSImage *combinedImage;
+@property (nonatomic, strong) NSData *combinedImageData;
 
 @end
 
@@ -48,13 +48,42 @@
     [super viewDidLoad];
     
     self.imagePlatform = [[ImagePlatform alloc] init];
+    
+    self.textView.stringValue = NSLocalizedString(@"depthPrediction.loading", @"Loading model");
+    self.imageOpenButton.enabled = NO;
+    self.aspectFillImageSaveButton.enabled = NO;
+    self.depthImageSaveButton.enabled = NO;
+    self.combinedImageSaveButton.enabled = NO;
+    
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        [self loadModel];
+    });
+}
+
+- (void)loadModel {
     NSError *error = nil;
     self.fcrn = [[ML_MODEL_CLASS alloc] init];
     self.model = [VNCoreMLModel modelForMLModel:self.fcrn.model error:&error];
     
-    // Do any additional setup after loading the view.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.model != nil) {
+            [self didLoadModel];
+        } else {
+            [self didFailToLoadModelWithError:error];
+        }
+    });
+    
 }
 
+- (void)didLoadModel {
+    self.textView.stringValue = NSLocalizedString(@"depthPrediction.readyToOpen", @"Please open an image");
+    self.imageOpenButton.enabled = YES;
+}
+
+- (void)didFailToLoadModelWithError:(NSError*)error {
+    self.textView.stringValue = NSLocalizedString(@"depthPrediction.failToLoad", @"Error loading model");
+    NSLog(@"Error loading model: \"%@\"", error);
+}
 
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
@@ -93,7 +122,7 @@
     
     NSArray* imageTypes = [NSImage imageTypes];
     [openPanel setAllowsMultipleSelection:NO];
-    [openPanel setMessage:@"Choose an image file to display:"];
+    [openPanel setMessage:@"Choose an image file"];
     [openPanel setAllowedFileTypes:imageTypes];
     //[panel setNameFieldStringValue:newName];
     [openPanel setDirectoryURL:[NSURL fileURLWithPath:@"~/Pictures/"]];
@@ -104,6 +133,9 @@
             {
                 NSString* imagePathStr = [[openPanel URL] path];
                 NSImage *image = [self configureImage:imagePathStr];
+                
+                self.imageOpenButton.enabled = NO;
+                self.textView.stringValue = NSLocalizedString(@"depthPrediction.predicting", @"Please wait...");
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
                     [self predictDepthMapFromInputImage:image];
                 });
@@ -135,9 +167,11 @@
     if (sender == self.depthImageSaveButton) {
         [savePanel setMessage:@"Save depth image file:"];
         filePathToSuggest = [NSString stringWithFormat:@"%@-fcrn_depth.%@", fileNameToSuggest, fileExtentionToSuggest];
-    } else {
+    } else if (sender == self.aspectFillImageSaveButton) {
         [savePanel setMessage:@"Save aspect-fill cropped image file:"];
         filePathToSuggest = [NSString stringWithFormat:@"%@-fcrn.%@", fileNameToSuggest, fileExtentionToSuggest];
+    } else if (sender == self.combinedImageSaveButton) {
+        filePathToSuggest = [NSString stringWithFormat:@"%@-fcrn_combined.%@", fileNameToSuggest, fileExtentionToSuggest];
     }
     
     [savePanel setNameFieldStringValue:filePathToSuggest];
@@ -153,8 +187,10 @@
                     NSData* jpegData = nil;
                     if (sender == self.depthImageSaveButton) {
                         jpegData = [depthImage imageJPEGRepresentationWithCompressionFactor:0.80f];
-                    } else {
+                    } else if (sender == self.aspectFillImageSaveButton) {
                         jpegData = [self.croppedInputImage imageJPEGRepresentationWithCompressionFactor:0.80f];
+                    } else if (sender == self.combinedImageSaveButton) {
+                        jpegData = self.combinedImageData;
                     }
                     BOOL didWrite = [jpegData writeToFile:depthImagePathStr atomically:YES];
                     if (didWrite) {
@@ -171,9 +207,10 @@
 - (void)predictDepthMapFromInputImage:(NSImage*)inputImage {
     NSError *error = nil;
     
-    NSImage *image = [inputImage copy];
-    
     VNRequestCompletionHandler completionHandler =  ^(VNRequest *request, NSError * _Nullable error) {
+         dispatch_async(dispatch_get_main_queue(), ^{
+             self.textView.stringValue = NSLocalizedString(@"depthPrediction.completionHandler", @"Processing results...");
+         });
         NSArray *results = request.results;
         NSLog(@"results = \"%@\"", results);
         for (VNObservation *observation in results) {
@@ -199,17 +236,17 @@
                     self.disparityImage = [self.imagePlatform createDisperityDepthImage];
                     //self.depthImage =  [self.imagePlatform createBGRADepthImage];
                                                             
-                    CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:image.size
+                    CGRect inputImageCropRect = [self.imagePlatform cropRectFromImageSize:inputImage.size
                                                                    withSizeForAspectRatio:self.disparityImage.size];
                     
-                    NSImage *croppedImage  = [self.imagePlatform cropImage:image
+                    NSImage *croppedImage  = [self.imagePlatform cropImage:inputImage
                                                               withCropRect:inputImageCropRect];
                     self.croppedInputImage = croppedImage;
                     
-                    self.combinedImage =  [self.imagePlatform addDepthMapToExistingImage:self.croppedInputImage];
+                    self.combinedImageData =  [self.imagePlatform addDepthMapToExistingImage:croppedImage];
                         
                     self.depthHistogramImage = [self.imagePlatform depthHistogram];
-                                                            
+                        
                     [self didPrepareImages];
                     });
                 }
@@ -217,10 +254,9 @@
         }
     };
     
+    
     self.request = [[VNCoreMLRequest alloc] initWithModel:self.model completionHandler:completionHandler];
-    
-    
-    CGImageRef imageRef = [image asCGImageRef];
+    CGImageRef imageRef = [inputImage asCGImageRef];
     self.handler = [[VNImageRequestHandler alloc] initWithCGImage: imageRef
                                                           options:@{VNImageOptionCIContext : self.imagePlatform.imagePlatformCoreContext}];
     //[self.handler performRequests:self.request];
@@ -229,15 +265,32 @@
 
 - (void)didPrepareImages {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
         
-        [self.depthImageView setImage:self.disparityImage];
-        [self.depthImageSaveButton setEnabled:YES];
+        self.handler = nil;
+        self.request = nil;
         
-        [self.imageView setContentsGravity:kCAGravityResizeAspect];
-        [self.imageView setImage:self.croppedInputImage];
+        self.textView.stringValue = NSLocalizedString(@"depthPrediction.didPrepareImages", @"Images are ready");
+                    
+        if (self.disparityImage) {
+            [self.depthImageView setContentsGravity:kCAGravityResizeAspect];
+            [self.depthImageView setImage:self.disparityImage];
+            [self.depthImageSaveButton setEnabled:YES];
+        }
         
-        [self.histogramImageView setImage:self.depthHistogramImage];
+        if (self.croppedInputImage) {
+            [self.imageView setContentsGravity:kCAGravityResizeAspect];
+            [self.imageView setImage:self.croppedInputImage];
+        }
+        
+        if (self.depthHistogramImage) {
+            [self.histogramImageView setImage:self.depthHistogramImage];
+        }
+        
+        if (self.combinedImageData) {
+            [self.combinedImageSaveButton setEnabled:YES];
+        }
+        
+        self.imageOpenButton.enabled = YES;
     });
 }
 
