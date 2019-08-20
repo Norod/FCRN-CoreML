@@ -1,5 +1,9 @@
 <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 5.4.0">
    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <rdf:Description rdf:about=""
+     xmlns:tiff="http://ns.adobe.com/tiff/1.0/">
+    <tiff:Orientation>1</tiff:Orientation>
+   </rdf:Description>
       <rdf:Description rdf:about=""
             xmlns:depthData="http://ns.apple.com/depthData/1.0/"
             xmlns:depthBlurEffect="http://ns.apple.com/depthBlurEffect/1.0/">

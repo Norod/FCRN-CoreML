@@ -455,6 +455,14 @@ typedef struct _sImagePlatformContext {
 - (NSData*)addDepthMapToExistingImage:(IMAGE_TYPE*)existingImage {
     NSData *combinedImageData = NULL;
     
+    NSMutableData *imageData = [NSMutableData data];
+    
+    CGImageDestinationRef imageDestination =  CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageData, (CFStringRef)@"public.jpeg", 1, NULL);
+    
+    if (imageDestination == nil) {
+        return nil;
+    }
+    
     NSString *portraitStr = @"Portrait";
     NSString *landscapeStr = @"Landscape";
     NSString *orientationXMPFile = nil;
@@ -478,6 +486,7 @@ typedef struct _sImagePlatformContext {
                                        @"PixelFormat" : @(pixelFormatType),
                                        @"Width" : @(width)};
     
+  
     NSData *depthMapImageData = [NSData dataWithBytesNoCopy:_context.spBuff length:_context.spBuffSize freeWhenDone:NO];
     
     NSDictionary *auxiliaryDict = [self auxiliaryDictWithImageData:depthMapImageData
@@ -487,26 +496,25 @@ typedef struct _sImagePlatformContext {
     NSError *error = nil;
     AVDepthData *depthData = [AVDepthData depthDataFromDictionaryRepresentation:auxiliaryDict error:&error];
     
-    NSMutableData *imageData = [NSMutableData data];
-    
-    CGImageDestinationRef imageDestination =  CGImageDestinationCreateWithData((CFMutableDataRef)imageData, (CFStringRef)@"public.jpeg", 1, NULL);
-    
-    CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], NULL);
-    
-    
     // Use AVDepthData to get the auxiliary data dictionary.
-    NSString *auxDataType = nil;
-    NSDictionary *auxData = [depthData dictionaryRepresentationForAuxiliaryDataType:&auxDataType];
-    
-    CFDictionaryRef auxDataRef = (__bridge CFDictionaryRef)(auxData);
-    NSLog(@"auxDataRef = 0x%x", (unsigned int)auxDataRef);
-    
+       NSString *auxDataType = nil;
+       NSDictionary *auxData = [depthData dictionaryRepresentationForAuxiliaryDataType:&auxDataType];
+       
+       CFDictionaryRef auxDataRef = (__bridge CFDictionaryRef)(auxData);
+       NSLog(@"auxDataRef = 0x%x", (unsigned int)auxDataRef);
+            
+    NSDictionary *exifDict = @{(NSString*)kCGImagePropertyExifDictionary:@{@"Orientation":@(1), @(0x0112):@(1)}};
+    CFDictionaryRef exifDictRef = (__bridge CFDictionaryRef)(exifDict);
+    CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], ( CFDictionaryRef)exifDictRef );
+
     // Add auxiliary data to the image destination.
     CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, auxDataRef);
     
     if (CGImageDestinationFinalize(imageDestination)) {
         combinedImageData = [NSData dataWithData:imageData];
     }
+    
+    CFRelease(imageDestination);
     
     return combinedImageData;
 }
