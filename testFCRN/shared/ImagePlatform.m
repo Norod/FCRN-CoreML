@@ -8,8 +8,8 @@
 
 #import "ImagePlatform.h"
 
-//#define kDepthFormat kCVPixelFormatType_DisparityFloat32
-#define kDepthFormat kCVPixelFormatType_DepthFloat32
+#define kDepthFormat kCVPixelFormatType_DisparityFloat32
+//#define kDepthFormat kCVPixelFormatType_DepthFloat32
 
 @import CoreImage;
 @import Accelerate;
@@ -63,6 +63,7 @@ typedef struct _sImagePlatformContext {
 }
 
 @property (nonatomic, strong) CIContext     *imagePlatformCoreContext;
+@property (nonatomic, strong) CIImage *scaledDepthImage;
 
 @end
 
@@ -422,6 +423,8 @@ typedef struct _sImagePlatformContext {
     
     [self.imagePlatformCoreContext render:scaledDepthImage toCVPixelBuffer:scaledDepthPixelBufferRef];
     
+    self.scaledDepthImage = [CIImage imageWithCVImageBuffer:scaledDepthPixelBufferRef];
+    
     IMAGE_TYPE * depthImage = [self imageFromCVPixelBufferRef:scaledDepthPixelBufferRef imageOrientation:UIImageOrientationUp];
     
     [self teardownPixelBuffer:&grayImageBuffer];
@@ -494,7 +497,15 @@ typedef struct _sImagePlatformContext {
                                                            xmpPath:xmpPath];
     
     NSError *error = nil;
-    AVDepthData *depthData = [AVDepthData depthDataFromDictionaryRepresentation:auxiliaryDict error:&error];
+    AVDepthData *depthDataUnscaled = [AVDepthData depthDataFromDictionaryRepresentation:auxiliaryDict error:&error];
+    AVDepthData *depthData = [depthDataUnscaled depthDataByReplacingDepthDataMapWithPixelBuffer:[self.scaledDepthImage pixelBuffer] error:&error];
+    
+    if (depthData == NULL) {
+        NSLog(@"ERROR - depthDataByReplacingDepthDataMapWithPixelBuffer failed: %@", error);
+        depthData = depthDataUnscaled;
+    }
+    
+    CVPixelBufferRef depthDataMap = [depthData depthDataMap];
     
     // Use AVDepthData to get the auxiliary data dictionary.
        NSString *auxDataType = nil;
@@ -503,9 +514,10 @@ typedef struct _sImagePlatformContext {
        CFDictionaryRef auxDataRef = (__bridge CFDictionaryRef)(auxData);
        NSLog(@"auxDataRef = 0x%x", (unsigned int)auxDataRef);
             
-    NSDictionary *exifDict = @{(NSString*)kCGImagePropertyExifDictionary:@{@"Orientation":@(1), @(0x0112):@(1)}};
-    CFDictionaryRef exifDictRef = (__bridge CFDictionaryRef)(exifDict);
-    CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], ( CFDictionaryRef)exifDictRef );
+   // NSDictionary *exifDict = @{(NSString*)kCGImagePropertyExifDictionary:@{@"Orientation":@(1), @(0x0112):@(1)}};
+   // CFDictionaryRef exifDictRef = (__bridge CFDictionaryRef)(exifDict);
+   // CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], ( CFDictionaryRef)exifDictRef );
+    CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], NULL);
 
     // Add auxiliary data to the image destination.
     CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, auxDataRef);
