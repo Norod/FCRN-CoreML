@@ -374,11 +374,12 @@ typedef struct _sImagePlatformContext {
     _context.maxV = maxV;
     _context.minV = minV;
     
+    [self prepareDisperityDepthImage];
+    
     return YES;
 }
 
-- (IMAGE_TYPE*)createDisperityDepthImage {
-    
+- (void)prepareDisperityDepthImage {
     NSAssert((_context.pixelSizeInBytes == 8), @"Expected double sized elements");
     
     CVPixelBufferRef grayImageBuffer = NULL;
@@ -388,7 +389,7 @@ typedef struct _sImagePlatformContext {
                                   withRect:pixelBufferRect];
     
     if (grayImageBuffer == NULL || didSetup == NO) {
-        return NULL;
+        return;
     }
     
     CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
@@ -418,20 +419,24 @@ typedef struct _sImagePlatformContext {
     
     if (scaledDepthPixelBufferRef == NULL || didSetup == NO) {
         [self teardownPixelBuffer:&grayImageBuffer];
-        return NULL;
+        return;
     }
     
     [self.imagePlatformCoreContext render:scaledDepthImage toCVPixelBuffer:scaledDepthPixelBufferRef];
     
     self.scaledDepthImage = [CIImage imageWithCVImageBuffer:scaledDepthPixelBufferRef];
     
-    IMAGE_TYPE * depthImage = [self imageFromCVPixelBufferRef:scaledDepthPixelBufferRef imageOrientation:UIImageOrientationUp];
-    
     [self teardownPixelBuffer:&grayImageBuffer];
     [self teardownPixelBuffer:&scaledDepthPixelBufferRef];
+}
+
+- (IMAGE_TYPE*)createDisperityDepthImage {
+    
+    CVPixelBufferRef scaledDepthPixelBufferRef = [self.scaledDepthImage pixelBuffer];
+    
+    IMAGE_TYPE * depthImage = [self imageFromCVPixelBufferRef:scaledDepthPixelBufferRef imageOrientation:UIImageOrientationUp];
     
     return depthImage;
-    
 }
 
 - (nullable NSDictionary *)auxiliaryDictWithImageData:(nonnull NSData *)imageData
@@ -505,7 +510,7 @@ typedef struct _sImagePlatformContext {
         depthData = depthDataUnscaled;
     }
     
-    CVPixelBufferRef depthDataMap = [depthData depthDataMap];
+    //CVPixelBufferRef depthDataMap = [depthData depthDataMap];
     
     // Use AVDepthData to get the auxiliary data dictionary.
        NSString *auxDataType = nil;
