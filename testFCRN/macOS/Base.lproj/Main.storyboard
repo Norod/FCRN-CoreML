@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14854.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14865.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14854.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14865.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -711,15 +711,15 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="eUm-Lt-vqK" customClass="ImageLayerView">
-                                <rect key="frame" x="17" y="125" width="222" height="226"/>
+                                <rect key="frame" x="17" y="125" width="240" height="226"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageFrameStyle="photo" id="PlW-bn-0Wz"/>
                             </imageView>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="YEg-Hn-NDq" customClass="ImageLayerView">
-                                <rect key="frame" x="241" y="125" width="258" height="226"/>
+                                <rect key="frame" x="259" y="125" width="240" height="226"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="photo" id="wph-Jb-Elv"/>
                             </imageView>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WR-tN-hFX">
-                                <rect key="frame" x="20" y="98" width="218" height="19"/>
+                                <rect key="frame" x="20" y="98" width="236" height="19"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="19" id="8me-Ov-VsH"/>
                                 </constraints>
@@ -730,7 +730,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X46-Eb-qkv">
-                                <rect key="frame" x="22" y="65" width="50" height="25"/>
+                                <rect key="frame" x="22" y="65" width="68" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="mEw-od-YX7"/>
                                 </constraints>
@@ -743,7 +743,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WK5-7S-do0">
-                                <rect key="frame" x="112" y="65" width="124" height="25"/>
+                                <rect key="frame" x="130" y="65" width="124" height="25"/>
                                 <buttonCell key="cell" type="roundTextured" title="Save cropped img…" bezelStyle="texturedRounded" alignment="left" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="bp7-UF-hqH">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
@@ -753,11 +753,11 @@
                                 </connections>
                             </button>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Yoa-kG-g8Y">
-                                <rect key="frame" x="241" y="5" width="258" height="118"/>
+                                <rect key="frame" x="259" y="5" width="240" height="118"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="photo" id="iTa-jD-i0e"/>
                             </imageView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mlT-41-vHE">
-                                <rect key="frame" x="112" y="33" width="124" height="25"/>
+                                <rect key="frame" x="130" y="33" width="124" height="25"/>
                                 <buttonCell key="cell" type="roundTextured" title="Save depth img…" bezelStyle="texturedRounded" alignment="left" controlSize="small" enabled="NO" state="on" borderStyle="border" inset="2" id="yZZ-od-aQx">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
@@ -767,7 +767,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K9N-tb-YCY">
-                                <rect key="frame" x="112" y="2" width="124" height="24"/>
+                                <rect key="frame" x="130" y="2" width="124" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="IXD-cs-Vwq"/>
                                 </constraints>
@@ -789,7 +789,9 @@
                             <constraint firstItem="Yoa-kG-g8Y" firstAttribute="trailing" secondItem="YEg-Hn-NDq" secondAttribute="trailing" id="Hhc-Qi-5Xj"/>
                             <constraint firstItem="X46-Eb-qkv" firstAttribute="top" secondItem="0WR-tN-hFX" secondAttribute="bottom" constant="8" symbolic="YES" id="LTt-UK-gPe"/>
                             <constraint firstItem="mlT-41-vHE" firstAttribute="trailing" secondItem="K9N-tb-YCY" secondAttribute="trailing" id="M1u-3H-VTi"/>
+                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="width" secondItem="eUm-Lt-vqK" secondAttribute="width" id="OOX-Xc-88g"/>
                             <constraint firstItem="WK5-7S-do0" firstAttribute="leading" secondItem="X46-Eb-qkv" secondAttribute="trailing" constant="40" id="PAu-1y-OH3"/>
+                            <constraint firstItem="YEg-Hn-NDq" firstAttribute="height" secondItem="eUm-Lt-vqK" secondAttribute="height" id="Pkn-gT-bYO"/>
                             <constraint firstItem="eUm-Lt-vqK" firstAttribute="bottom" secondItem="YEg-Hn-NDq" secondAttribute="bottom" id="S77-Qn-FbM"/>
                             <constraint firstAttribute="bottom" secondItem="X46-Eb-qkv" secondAttribute="bottom" constant="66" id="Wht-ux-azY"/>
                             <constraint firstItem="YEg-Hn-NDq" firstAttribute="leading" secondItem="eUm-Lt-vqK" secondAttribute="trailing" constant="8" symbolic="YES" id="aE9-7b-wfg"/>

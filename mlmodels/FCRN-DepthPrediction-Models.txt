@@ -1,0 +1,14 @@
+You can download FCRN-DepthPrediction CoreML models from https://developer.apple.com/machine-learning/models/
+
+You can download just one of them, both work with this project.
+Choose which one to use by setting the relevant build target in Xcode
+
+FCRN.mlmodel
+Storing model weights using full precision (32 bit) floating points numbers.
+254.7MB
+https://docs-assets.developer.apple.com/coreml/models/Image/DepthEstimation/FCRN/FCRN.mlmodel
+
+FCRNFP16.mlmodel
+Storing model weights using half-precision (16 bit) floating points numbers.
+127.3MB
+https://docs-assets.developer.apple.com/coreml/models/Image/DepthEstimation/FCRN/FCRNFP16.mlmodel
