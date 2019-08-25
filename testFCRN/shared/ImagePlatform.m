@@ -552,7 +552,7 @@ typedef struct _sImagePlatformContext {
     }
     
     CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
-    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+    uint32_t *pRGBA = (uint32_t *)CVPixelBufferGetBaseAddress(grayImageBuffer);
     
     const vImage_Buffer grayBuffV = {grayBuff, sizeY, sizeX, sizeX};
     const vImage_Buffer rgbaBuffV = {pRGBA, sizeY, sizeX, sizeX * 4};
@@ -607,7 +607,7 @@ typedef struct _sImagePlatformContext {
     }
     
     CVPixelBufferLockBaseAddress(grayImageBuffer, 0);
-    uint32 *pRGBA = (uint32 *)CVPixelBufferGetBaseAddress(grayImageBuffer);
+    uint32_t *pRGBA = (uint32_t *)CVPixelBufferGetBaseAddress(grayImageBuffer);
     
     char *colBuff1 = malloc(sizeX*sizeY);
     char *colBuff2 = malloc(sizeX*sizeY);
@@ -687,7 +687,7 @@ typedef struct _sImagePlatformContext {
         
         croppedImage = [[IMAGE_TYPE alloc] initWithCGImage:imageRef size:imageSize] ;
 #else
-        croppedImage = [IMAGE_TYPE imageWithCGImage:imageRef scale:1.0 orientation:imageOrientation];
+        croppedImage = [IMAGE_TYPE imageWithCGImage:imageRef scale:1.0 orientation:image.imageOrientation];
 #endif
         
         CGImageRelease(imageRef);

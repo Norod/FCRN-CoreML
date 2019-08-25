@@ -33,6 +33,16 @@
 		E85B07CC2312C6200047D978 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E85B07BB2312C5970047D978 /* LaunchScreen.storyboard */; };
 		E85B07CD2312C6200047D978 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E85B07B92312C5970047D978 /* Assets.xcassets */; };
 		E85B07CE2312C6200047D978 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E85B07B62312C5950047D978 /* Main.storyboard */; };
+		E85B07D42312CB930047D978 /* FCRNFP16.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = E8201F4922EF1A250098B7DB /* FCRNFP16.mlmodel */; };
+		E85B07D52312CB970047D978 /* FCRN.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = E8201F4722EF1A1D0098B7DB /* FCRN.mlmodel */; };
+		E85B07D62312CBA00047D978 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
+		E85B07D72312CBA10047D978 /* ImagePlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7368522ED7D6B00309FD0 /* ImagePlatform.m */; };
+		E85B07D82312CBD40047D978 /* DepthPortrait.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */; };
+		E85B07D92312CBD50047D978 /* DepthPortrait.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */; };
+		E85B07DA2312CBD70047D978 /* Matte.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8922FC735C00E48DB8 /* Matte.xmp */; };
+		E85B07DB2312CBD80047D978 /* Matte.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8922FC735C00E48DB8 /* Matte.xmp */; };
+		E85B07DC2312CBDA0047D978 /* DepthLandscape.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */; };
+		E85B07DD2312CBDB0047D978 /* DepthLandscape.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */; };
 		E87F8F8B22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */; };
 		E87F8F8C22FC735D00E48DB8 /* DepthPortrait.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */; };
 		E87F8F8D22FC735D00E48DB8 /* Matte.xmp in Resources */ = {isa = PBXBuildFile; fileRef = E87F8F8922FC735C00E48DB8 /* Matte.xmp */; };
@@ -334,8 +344,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E85B07BD2312C5970047D978 /* LaunchScreen.storyboard in Resources */,
+				E85B07DA2312CBD70047D978 /* Matte.xmp in Resources */,
 				E85B07BA2312C5970047D978 /* Assets.xcassets in Resources */,
+				E85B07D82312CBD40047D978 /* DepthPortrait.xmp in Resources */,
 				E85B07B82312C5950047D978 /* Main.storyboard in Resources */,
+				E85B07DC2312CBDA0047D978 /* DepthLandscape.xmp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,8 +357,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E85B07CC2312C6200047D978 /* LaunchScreen.storyboard in Resources */,
+				E85B07DB2312CBD80047D978 /* Matte.xmp in Resources */,
 				E85B07CD2312C6200047D978 /* Assets.xcassets in Resources */,
+				E85B07D92312CBD50047D978 /* DepthPortrait.xmp in Resources */,
 				E85B07CE2312C6200047D978 /* Main.storyboard in Resources */,
+				E85B07DD2312CBDB0047D978 /* DepthLandscape.xmp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,9 +398,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E85B07D62312CBA00047D978 /* ImagePlatform.m in Sources */,
 				E85B07B52312C5950047D978 /* ViewController.m in Sources */,
 				E85B07AF2312C5950047D978 /* AppDelegate.m in Sources */,
 				E85B07C02312C5970047D978 /* main.m in Sources */,
+				E85B07D42312CB930047D978 /* FCRNFP16.mlmodel in Sources */,
 				E85B07B22312C5950047D978 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,7 +411,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E85B07D72312CBA10047D978 /* ImagePlatform.m in Sources */,
 				E85B07C62312C6200047D978 /* ViewController.m in Sources */,
+				E85B07D52312CB970047D978 /* FCRN.mlmodel in Sources */,
 				E85B07C72312C6200047D978 /* AppDelegate.m in Sources */,
 				E85B07C82312C6200047D978 /* main.m in Sources */,
 				E85B07C92312C6200047D978 /* SceneDelegate.m in Sources */,
@@ -482,6 +502,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				ML_MODEL_CLASS_NAME = FCRNFP16;
 				PRODUCT_BUNDLE_IDENTIFIER = tech.dadler.testFCRN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -501,6 +522,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				ML_MODEL_CLASS_NAME = FCRNFP16;
 				PRODUCT_BUNDLE_IDENTIFIER = tech.dadler.testFCRN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -525,6 +547,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				ML_MODEL_CLASS_NAME = FCRN;
 				PRODUCT_BUNDLE_IDENTIFIER = tech.dadler.testFCRN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -544,6 +567,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				ML_MODEL_CLASS_NAME = FCRN;
 				PRODUCT_BUNDLE_IDENTIFIER = tech.dadler.testFCRN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

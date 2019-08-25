@@ -22,7 +22,7 @@
     #endif
 #endif
 
-#define MAKE_RGBA_UINT32(R, G, B, A) ((((uint32)(R & 0xFF)) << 24) | (((uint32)(G & 0xFF)) << 16) | (((uint32)(B & 0xFF)) << 8 ) | ((uint32)(A & 0xFF) << 0 ))
+#define MAKE_RGBA_uint32_t(R, G, B, A) ((((uint32_t)(R & 0xFF)) << 24) | (((uint32_t)(G & 0xFF)) << 16) | (((uint32_t)(B & 0xFF)) << 8 ) | ((uint32_t)(A & 0xFF) << 0 ))
 
 #ifdef MACOS_TARGET
 typedef NS_ENUM(NSInteger, UIImageOrientation) {
