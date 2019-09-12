@@ -83,7 +83,6 @@
 		E85B07BE2312C5970047D978 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E85B07BF2312C5970047D978 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E85B07D22312C6200047D978 /* testFCRN32-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "testFCRN32-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E85B07D32312C6200047D978 /* testFCRN16-iOS copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "testFCRN16-iOS copy-Info.plist"; path = "/Users/dadler/Projects/GitHub/ML/models/FCRN/testFCRN/testFCRN16-iOS copy-Info.plist"; sourceTree = "<absolute>"; };
 		E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthPortrait.xmp; sourceTree = "<group>"; };
 		E87F8F8922FC735C00E48DB8 /* Matte.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Matte.xmp; sourceTree = "<group>"; };
 		E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthLandscape.xmp; sourceTree = "<group>"; };
@@ -203,7 +202,6 @@
 			children = (
 				E8A7365C22ED7BE400309FD0 /* testFCRN */,
 				E8A7365B22ED7BE400309FD0 /* Products */,
-				E85B07D32312C6200047D978 /* testFCRN16-iOS copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};

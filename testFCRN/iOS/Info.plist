@@ -20,6 +20,10 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Load images from your photo library and save them with predicted depth information</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Load images from your photo library and save them with predicted depth information</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
