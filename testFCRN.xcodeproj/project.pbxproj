@@ -191,8 +191,8 @@
 			isa = PBXGroup;
 			children = (
 				E87F8F8822FC735C00E48DB8 /* DepthPortrait.xmp */,
-				E87F8F8922FC735C00E48DB8 /* Matte.xmp */,
 				E87F8F8A22FC735C00E48DB8 /* DepthLandscape.xmp */,
+				E87F8F8922FC735C00E48DB8 /* Matte.xmp */,
 			);
 			path = xmp;
 			sourceTree = "<group>";
