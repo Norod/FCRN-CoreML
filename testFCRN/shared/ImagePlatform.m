@@ -519,10 +519,14 @@ typedef struct _sImagePlatformContext {
        CFDictionaryRef auxDataRef = (__bridge CFDictionaryRef)(auxData);
        NSLog(@"auxDataRef = 0x%x", (unsigned int)auxDataRef);
             
-   // NSDictionary *exifDict = @{(NSString*)kCGImagePropertyExifDictionary:@{@"Orientation":@(1), @(0x0112):@(1)}};
-   // CFDictionaryRef exifDictRef = (__bridge CFDictionaryRef)(exifDict);
-   // CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], ( CFDictionaryRef)exifDictRef );
-    CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], NULL);
+    NSDictionary *exifDict = @{(NSString*)kCGImagePropertyExifDictionary:@{
+                                   @(0x0112):@(0x0000), //Orientation
+                                    (NSString*)kCGImagePropertyExifCustomRendered:@(0x0008), //Portrait
+                                    (NSString*)kCGImagePropertyExifUserComment:ML_MODEL_CLASS_NAME_STRING                                   
+    }};
+                               
+    CFDictionaryRef exifDictRef = (__bridge CFDictionaryRef)(exifDict);
+    CGImageDestinationAddImage(imageDestination, [existingImage asCGImageRef], ( CFDictionaryRef)exifDictRef );
 
     // Add auxiliary data to the image destination.
     CGImageDestinationAddAuxiliaryDataInfo(imageDestination, (CFStringRef)auxDataType, auxDataRef);
