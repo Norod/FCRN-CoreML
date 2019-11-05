@@ -5,11 +5,17 @@ Depth Estimation sample Apps for iOS and macOS, using the FCRN-DepthPrediction m
 
 <img src="images/fcrn16-iOS.jpg" alt="fcrn16-iOS" width="50%" height="50%"> <img src="images/fcrn16-macOS.jpg" alt="fcrn16-macOS" width="100%" height="100%"> 
 
-* Loads an image and crops it to the size requested by the model
-* The same helper class provides hardware accelerated for both iOS and macOS
+* Loads an image and crops it to the input size requested by the FCRN model
+* The same helper class _ImagePlatform_ provides hardware accelerated processing tools for both iOS and macOS images and buffers
 * Supports both _FCRN-16_ and _FCRN-32_ models 
-* You can run _convertOutput.sh_ to batch convert them into jpg's
-* Before you try the sample App you need to download a model and save it in the _mlmodel_ folder
+* You can post the predicted cropped portrait photo to Facebook as a 3D photo directly from your iPhone
+
+     <img src="images/RPReplay_Final1572888224.gif" alt="Post to Facebook as 3D photo" width="50%" height="50%">
+
+* You can also post the cropped predicted depthmap together with the cropped input image photo to Facebook as a 3D photo directly using a browser on your Mac or PC. See [this guide](https://www.facebook.com/help/www/414295416095269) for more information.
+
+
+### Before you try the sample App you need to download a model and save it in the _mlmodel_ folder
 
 You can download FCRN-DepthPrediction CoreML models from [https://developer.apple.com/machine-learning/models/](https://developer.apple.com/machine-learning/models/)
 
