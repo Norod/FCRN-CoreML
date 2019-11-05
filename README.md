@@ -1,4 +1,4 @@
-# FCRN-CoreML sample app
+# Depth estimation using FCRN-CoreML
 ## iOS and macOS
 
 Depth Estimation sample Apps for iOS and macOS, using the FCRN-DepthPrediction models Apple provided on their [model page](https://developer.apple.com/machine-learning/models/). 
