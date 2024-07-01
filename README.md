@@ -1,3 +1,5 @@
+# ⚠️ The FCRN mlmodel was deleted by Apple and replaced by Depth Anything V2 ⚠️ 
+
 # Depth estimation using FCRN-CoreML
 ## iOS and macOS
 
